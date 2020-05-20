@@ -1,0 +1,81 @@
+<template>
+  <div class="password">
+    <banner />
+    <my-form
+      :status="3"
+      :placeholder="placeholder"
+      title="修改密码"
+      :imgCode="imgCode"
+      @getCode="getCode"
+      @sendcode="sendcode"
+      @submit="submit"
+    />
+    <tabbar />
+  </div>
+</template>
+
+<script>
+import banner from "@/components/common/banner";
+import myForm from "@/components/form";
+import api from "@/plugins/api/api";
+
+export default {
+  components: {
+    banner,
+    myForm
+  },
+  data() {
+    return {
+      placeholder: {
+        p1: "请输入原手机号码",
+        p2: "请输入短信验证码",
+        p3: "发送短信",
+        p4: "确认",
+        p5: "密码"
+      },
+      imgCode:""
+    };
+  },
+  methods: {
+    submit(form) {
+      console.log(form);
+    },
+     getCode(){
+      api.login.getCaptcha().then((res)=>{
+        this.imgCode=res
+        this.imgCode=this.imgCode.replace(/"/ig,"")
+      })
+    },
+    sendcode(form) {
+      console.log(form.phone,form)
+      let params = {phone:form.phone}
+        api.login.getVerify(form.phone).then(res => {
+          console.log(res)
+          if(res.status === 200) {
+            this.$message({
+              message: res.msg,
+              type: 'success'
+            });
+          } else {
+            this.$message.error(res.msg);
+          }
+        })
+    },
+  },
+   mounted(){
+    api.login.getCaptcha().then((res)=>{
+        this.imgCode=res
+        this.imgCode=this.imgCode.replace(/"/ig,"")
+
+    })
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.password {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f3f0f3;
+}
+</style>

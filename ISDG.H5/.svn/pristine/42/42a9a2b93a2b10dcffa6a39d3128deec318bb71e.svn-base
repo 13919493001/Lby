@@ -1,0 +1,33 @@
+ //登录相关接口
+ import axios from "../axios"
+ const login={
+    login(params) {
+        return axios.post(`/api/login`,params)
+    },
+    //短信验证码
+    getVerify(phone){
+        return axios.get(`/api/verify_yunpian?phone=`+phone)
+    },
+    //图形验证码
+    getCaptcha(){
+        return axios.get(`/api/captcha_pc`)
+    },
+    //注册
+    register(params){
+        return axios.get(`/api/register`,{params})
+    },
+    //手机号修改密码
+    changePassWord(data){
+      return axios.post(`/api/register/reset`,data)
+    },
+    //qq登录
+    qqLogin(){
+        return axios.get(`/api/QQlogin`)
+    },
+    //wb登录
+    wbLogin(){
+        return axios.get(`/api/WBlogin`)
+    }
+
+ }
+ export default login

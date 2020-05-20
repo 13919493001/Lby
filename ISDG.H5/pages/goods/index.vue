@@ -1,0 +1,619 @@
+<template>
+  <div class="goods">
+    <div class="menu">
+      <div class="p-menu">
+        <!-- 热门推荐 -->
+        <div
+          v-for="(item, index) in menu"
+          :key="index"
+          class="item"
+          :class="{ active: menuId === index }"
+          @click="chooseCategory(index)"
+        >
+          <div v-if="item.count!=0">{{ item.cate_name }}</div>
+        </div>
+      </div>
+      <div class="s-menu" v-if="sidShow">
+      <!-- 两个子按钮 -->
+      <!-- 循环遍历 menu 中的子属性 -->
+        <div
+          v-for="(item, idx) in menu[menuId].children"
+          :key="idx"
+          class="item"
+          :class="{ active: num === idx }"
+          @click="chooseChild(idx,menuId)"
+        >
+          <div v-if="item.count!=0">{{ item.cate_name }}</div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- 轮播图 -->
+    <div class="swiper" :class="{'swiperCurr':scrollPosition>100}">
+    <div v-swiper:swiperTop="swiperOptionTop">
+      <div class="swiper-wrapper">
+        <div class="swiper-slide" v-for="(item, index) in 3" :key="index">
+          <img src="@/static/demo/home1.jpg" />
+        </div>
+      </div>
+      <div class="swiper-pagination"></div>
+      <!--分页器。如果放置在swiper-container外面，需要自定义样式。-->
+    </div>
+    </div>
+
+    <!-- 产品页面 -->
+    <div class="content">
+      <div class="top">
+        
+        <!-- 左侧导航 -->
+        <div class="left">
+          <div class="now">分类名称</div>
+          <div>{{cateName}}</div>
+        </div>
+        
+        <!-- 右侧导航 -->
+        <div class="right">
+          <el-dropdown @command="handleCommand" trigger="click">
+            <span class="el-dropdown-link">
+              {{ sort }}<i class="el-icon-arrow-down el-icon--right"></i>
+            </span>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="sort1" :class="{ active: active === 'sort1' }">默认排序</el-dropdown-item>
+              <el-dropdown-item command="sort2" :class="{ active: active === 'sort2' }">最新商品</el-dropdown-item>
+              <el-dropdown-item command="sort3" :class="{ active: active === 'sort3' }">价格由低到高</el-dropdown-item>
+              <el-dropdown-item command="sort4" :class="{ active: active === 'sort4' }">价格由高到低</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+          <!-- <div class="select" @click="select = !select">筛选</div> -->
+        </div>
+
+      </div>
+      <!-- <el-collapse-transition>
+        <div class="dialog" v-if="select">
+          <div class="dialog-select">
+            <div class="like">
+              <div class="dialog-title">猜你喜欢</div>
+              <div v-for="(item, index) in 4" :key="index" class="dialog-item">
+                <div></div>
+                <div>所有</div>
+              </div>
+            </div>
+            <div class="size">
+              <div class="dialog-title">规格</div>
+              <div v-for="(item, index) in 4" :key="index" class="dialog-item">
+                <div></div>
+                <div>所有</div>
+              </div>
+            </div>
+          </div>
+          <div class="btns">
+            <div class="btn">取消</div>
+            <div class="btn2">确定</div>
+          </div>
+        </div>
+      </el-collapse-transition> -->
+      <goods :goodsList="goodsList" :flashSale="false" />
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size="limit"
+        @prev-click="last"
+        @next-click="next"
+        @current-change="currentChange"
+        prev-text="上一页"
+        next-text="下一页"
+        v-if="show"
+        :hide-on-single-page="true"
+        :current-page="page"
+      >
+      </el-pagination>
+    </div>
+  </div>
+</template>
+
+<script>
+import goods from "@/components/goods";
+import api from '@/plugins/api/api'
+export default {
+  components: {
+    goods
+  },
+  data() {
+    return {
+      swiperOptionTop: {
+        grabCursor: true,
+        autoplay: true,
+        loop: true,
+        pagination: {
+          el: ".swiper-pagination"
+        }
+      },
+      active: "sort1",
+      sort: "默认排序",
+      select: false,
+      menu: [{children:{}}],
+      menuId: 0,
+      scrollTop: 0,
+      fixed1: false,
+      goodsList:[],
+      limit:9,
+      total:0,
+      page:1,
+      cid:1,
+      show:true,
+      sid:0,
+      num:-2,
+      scrollPosition: 0,
+      sidShow:true,
+      cateName:"",
+      priceOrder:"",
+      news:""
+    };
+  },
+  methods: {
+    handleCommand(e) {
+      this.active = e;
+      e === "sort1"
+        ? (this.sort = "默认排序")
+        : e === "sort2"
+        ? (this.sort = "最新商品")
+        : e === "sort3"
+        ? (this.sort = "价格由低到高")
+        : (this.sort = "价格由高到低");
+        if(e==="sort1"){
+          api.home.getGoods({page:this.page,limit:this.limit,cid:this.cid,sid:this.sid}).then((res)=>{
+            this.goodsList=res.data.product_info
+              this.total=res.data.product_count
+          });
+        }else if(e==="sort3"){
+          this.priceOrder="ASC"
+          api.home.getGoods({page:this.page,limit:this.limit,cid:this.cid,priceOrder:"ASC",sid:this.sid}).then((res)=>{
+            this.goodsList=res.data.product_info
+              this.total=res.data.product_count
+          });
+        }else if(e==="sort4"){
+          this.priceOrder="DESC"
+          api.home.getGoods({page:this.page,limit:this.limit,cid:this.cid,priceOrder:"DESC",sid:this.sid}).then((res)=>{
+            this.goodsList=res.data.product_info
+              this.total=res.data.product_count
+          });
+        }else if(e==="sort2"){
+          this.news=1
+          api.home.getGoods({page:this.page,limit:this.limit,cid:this.cid,sid:this.sid,news:1}).then((res)=>{
+            this.goodsList=res.data.product_info
+              this.total=res.data.product_count
+          });
+        }
+        
+    },
+    init() {
+      api.home.goodsMenu().then(res => {
+        // console.log(res);
+        if(res.status==200||res.data.status==200){
+          this.menu = res.data  
+          console.log(this.menu)
+          for(let k=0;k<this.menu.length;k++){
+            // 判断 this.menu 中的每一项的 count 值是否为 0
+            if(this.menu[k].count !=0){
+              console.log(this.menu[k].children[k])
+              this.cid=this.menu[k].id
+              this.menuId=k
+              this.cateName=this.menu[k].children[k].cate_name
+              break;
+            }
+          }          
+
+          // 商品详情数据
+          api.home.getGoods({page:this.page,limit:this.limit,cid:this.cid}).then(res =>{
+            // console.log(res);
+            this.goodsList = res.data.product_info
+            this.total=res.data.product_count
+            if(res.data.length<=0){
+              this.show=false
+            }else{
+              this.show=true
+            }
+
+          })
+        }
+        
+      })
+    },
+
+    last(){
+      this.page-=1
+      api.home.getGoods({page:this.page,limit:this.limit,cid:this.cid,priceOrder:this.priceOrder,news:this.news}).then(res =>{
+        // console.log(res);
+        this.goodsList = res.data.product_info
+      })
+    },
+    next(){
+      this.page+=1
+      api.home.getGoods({page:this.page,limit:this.limit,cid:this.cid,priceOrder:this.priceOrder,news:this.news}).then(res =>{
+        // console.log(res);
+        this.goodsList = res.data.product_info
+      })
+    },
+    currentChange(val){
+      this.page=val
+      api.home.getGoods({page:this.page,limit:this.limit,cid:this.cid,priceOrder:this.priceOrder,news:this.news}).then(res =>{
+        this.goodsList = res.data.product_info
+        // if(res.data.product_count==0){
+        //   this.sidShow=false
+        // }
+      })      
+    },
+     chooseCategory(index){
+        this.menuId=index
+        this.cid=this.menu[index].id
+        if(this.menu[index].children.length>0){
+          this.sidShow=true
+        }else{
+          this.sidShow=false
+        }
+        this.cateName=this.menu[index].cate_name
+				 api.home.getGoods({page:0,limit:this.limit,cid:this.cid,priceOrder:this.priceOrder,news:this.news}).then((res)=>{
+          this.goodsList=res.data.product_info
+            this.total=res.data.product_count
+				});
+      },
+      // 点击二级分类按钮
+      chooseChild(a,b){
+        // console.log(a,b)
+        this.cid=this.menu[b].id
+        this.num=a
+        this.sid=this.menu[b].children[a].id
+        // this.cateName=this.menu[b].children[a].cate_name
+        // console.log(this.cid,this.sid,a);
+        
+        api.home.getGoods({page:0,limit:this.limit,cid:this.cid,sid:this.sid,priceOrder:this.priceOrder,news:this.news}).then((res)=>{
+          this.goodsList=res.data.product_info
+            this.total=res.data.product_count
+				});
+      },
+      getScroll(){
+        this.scrollPosition = window.scrollY
+        // var swiper=document.getElementsByClassName("swiper-container")
+        // this.scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+        // if (!!document.documentElement.scrollTop &&document.documentElement.scrollTop >= 300){            
+        //   // swiper.style.height="0"
+        //         console.log(swiper.style);
+                
+        // }
+      }
+  },
+  created() {
+    this.init();
+  },
+  mounted() {
+    window.addEventListener('scroll', this.getScroll);
+  },
+  destroyed(){
+    window.removeEventListener('scroll', this.getScroll);
+  },
+ 
+};
+</script>
+
+<style lang="scss" scoped>
+
+.swiper{
+  height: 570px;
+  // transition-duration: 300ms;
+  transition:all .5s;
+  opacity: 1;
+  overflow: hidden;
+}
+.swiperCurr{
+  // animation: changeHeight 1s;
+  height: 0px;
+  opacity: 0;
+  
+}
+/deep/.el-dropdown-menu__item {
+  &:hover {
+    background: #fff;
+    color: #5dd2b1;
+  }
+}
+.active {
+  color: #5dd2b1;
+}
+.swiper-pagination-bullet {
+  opacity: 1;
+  background-color: #fff;
+}
+.swiper-pagination-bullet-active {
+  background-color: #225c45 !important;
+}
+.swiper-slide {
+  img {
+    width: 100%;
+    object-fit: cover;
+  }
+}
+.goods {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f7f4f8;
+  .menu {
+    width: 100%;
+    background-color: #fff;
+    .p-menu {
+      border-top: 1px solid #eeeeee;
+      display: flex;
+      justify-content: center;
+      height: 100px;
+      .item {
+        cursor: pointer;
+        height: 100%;
+        margin-left: 20px;
+        margin-right: 20px;
+        border-bottom: 3px solid transparent;
+        @include flex;
+      }
+      .active {
+        border-color: #5dd2b1;
+        color: #5dd2b1;
+        box-sizing: border-box;
+      }
+    }
+    .s-menu {
+      border-top: 1px solid #eeeeee;
+      @include flex;
+      height: 100px;
+      .item {
+        margin: 0 20px;
+        cursor: pointer;
+      }
+    }
+  }
+  .content {
+    max-width: 1200px;
+    padding: 67px 10px 70px 10px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    @include pagination;
+    .top {
+      width: 100%;
+      @include flex;
+      justify-content: space-between;
+      .left {
+        @include flex;
+        .now {
+          color: #5dd2b1;
+          margin-right: 40px;
+        }
+      }
+      .right {
+        @include flex;
+        /deep/.el-dropdown {
+          cursor: pointer;
+          margin-right: 30px;
+        }
+        .select {
+          cursor: pointer;
+        }
+      }
+    }
+    .dialog {
+      width: 100%;
+      padding: 40px 0;
+      padding-bottom: 0;
+      .dialog-select {
+        width: 100%;
+        @include flex;
+        .like {
+          margin-right: 40px;
+          .dialog-title {
+            font-weight: bold;
+            margin-bottom: 30px;
+          }
+          .dialog-item {
+            @include flex;
+            margin-bottom: 20px;
+            &:last-child {
+              margin-bottom: 0;
+            }
+            div:first-child {
+              width: 16px;
+              height: 16px;
+              background: rgba(255, 255, 255, 1);
+              border: 1px solid rgba(220, 220, 220, 1);
+              margin-right: 10px;
+              cursor: pointer;
+              @include flex;
+            }
+          }
+        }
+        .size {
+          margin-right: 0;
+          margin-left: 40px;
+          @extend .like;
+        }
+      }
+      .btns {
+        width: 100%;
+        margin: 0 auto;
+        @include flex;
+        margin-top: 30px;
+        .btn {
+          width: 100px;
+          height: 45px;
+          @include flex;
+          border: 1px solid rgba(191, 191, 191, 1);
+          margin-right: 20px;
+          cursor: pointer;
+        }
+        .btn2 {
+          @extend .btn;
+          color: #fff;
+          background-color: #333;
+          border-color: #333;
+          margin-right: 0;
+        }
+      }
+    }
+  }
+  .sub-content {
+    margin-top: 50px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .swiper{
+  height: px(420);
+  transition: 0.3s;
+}
+.swiperCurr{
+  // animation: changeHeight 1s;
+  height: 0px;
+  opacity: 0;
+  
+}
+  .swiper-slide {
+    img {
+      width: 100%;
+      height: px(428);
+      object-fit: fill;
+    }
+  }
+  .goods {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #fff;
+    .menu {
+    width: 100%;
+    background-color: #fff;
+    .p-menu {
+      border-top: 1px solid #eeeeee;
+      display: flex;
+      justify-content: space-around;
+      height: px(100);
+      .item {
+        cursor: pointer;
+        height:px(100);
+        border-bottom: 3px solid transparent;
+        @include flex;
+      }
+      .active {
+        border-color: #5dd2b1;
+        color: #5dd2b1;
+        box-sizing: border-box;
+      }
+    }
+    .s-menu {
+      border-top: 1px solid #eeeeee;
+      max-width: px(768);
+      overflow-y: scroll;
+      .s-menu::-webkit-scrollbar {
+        display: none;
+        width: 0;
+        height: 0;
+      }
+      @include flex;
+      height: px(100);
+      .item {
+        margin: 0 20px;
+        white-space: nowrap;
+        cursor: pointer;
+      }
+    }
+  }
+    .content {
+      width: 100%;
+      padding: px(50) px(24) px(70) px(24);
+      box-sizing: border-box;
+      margin: 0 auto;
+      @include pagination("m");
+      .top {
+        width: 100%;
+        @include flex;
+        justify-content: space-between;
+        font-size: px(24);
+        .left {
+          @include flex;
+          .now {
+            color: #5dd2b1;
+            margin-right: px(20);
+          }
+        }
+        .right {
+          @include flex;
+          /deep/.el-dropdown {
+            cursor: pointer;
+            margin-right: px(30);
+            font-size: px(24);
+          }
+          .select {
+            cursor: pointer;
+          }
+        }
+      }
+      .dialog {
+        width: 100%;
+        padding: px(60) 0;
+        padding-bottom: 0;
+        font-size: px(24);
+        .dialog-select {
+          width: 100%;
+          @include flex;
+          .like {
+            margin-right: 40px;
+            .dialog-title {
+              font-weight: bold;
+              margin-bottom: px(40);
+            }
+            .dialog-item {
+              @include flex;
+              margin-bottom: px(30);
+              &:last-child {
+                margin-bottom: 0;
+              }
+              div:first-child {
+                width: 16px;
+                height: 16px;
+                background: rgba(255, 255, 255, 1);
+                border: 1px solid rgba(220, 220, 220, 1);
+                margin-right: 10px;
+                cursor: pointer;
+                @include flex;
+              }
+            }
+          }
+          .size {
+            margin-right: 0;
+            margin-left: 40px;
+          }
+        }
+        .btns {
+          width: 100%;
+          margin: 0 auto;
+          @include flex;
+          margin-top: 30px;
+          .btn {
+            width: px(200);
+            height: px(68);
+            @include flex;
+            border: 1px solid rgba(191, 191, 191, 1);
+            margin-right: px(34);
+            cursor: pointer;
+          }
+          .btn2 {
+            color: #fff;
+            background-color: #333;
+            border-color: #333;
+            margin-right: 0;
+          }
+        }
+      }
+    }
+    .sub-content {
+      margin-top: 50px;
+      padding: 0 px(32);
+      box-sizing: border-box;
+    }
+  }
+}
+</style>

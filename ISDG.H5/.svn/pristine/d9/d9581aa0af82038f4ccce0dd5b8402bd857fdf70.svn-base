@@ -1,0 +1,40 @@
+import Vue from "vue";
+import Vuex from "vuex";
+
+Vue.use(Vuex);
+
+const store = () => new Vuex.Store({
+    state: {
+        isLogin: false,
+        token:"",
+        url:"http://192.168.1.31:8087"
+    },
+    mutations: {
+        userStatus(state,user){
+            if(user){
+                state.isLogin=true
+            }
+            // else if(user == null){
+            //     sessionStorage.setItem("userToken","");
+            //     state.isLogin=false;
+            //     state.token="";
+            // }
+        },
+    },
+    actions:{
+        setToken({commit},user){
+            commit("userStatus",user)
+        }
+    },
+
+    computed: {
+        isLogin(){
+         if(sessionStorage.getItem("userToken")){
+             state.isLogin=true;
+             state.token=sessionStorage.getItem("userToken");
+         }
+         return state.isLogin
+        }
+     },
+  });
+export default store

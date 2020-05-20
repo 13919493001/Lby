@@ -1,0 +1,416 @@
+<template>
+  <div class="search">
+    <div class="content">
+      <div class="top"></div>
+      <div class="search-input">
+        <div class="input">
+          <input type="search" placeholder="请输入内容" v-model="now" @blur="search"  @keyup.enter="search" />
+        </div>
+        <div class="btn" @click="search">
+          前往
+        </div>
+      </div>
+      <div class="history">
+        <div class="sec1">
+          <div class="text">历史搜索</div>
+          <div class="h-btn" @click="clear">清空</div>
+        </div>
+        <div class="sec2">
+          <div
+            class="item"
+            v-for="(item, index) in history"
+            :key="index"
+            @click="del(index)"
+          >
+            <span>{{ item }}</span>
+            <i class="el-icon-close"></i>
+          </div>
+        </div>
+      </div>
+      <div class="noRes" v-if="show">
+        <img src="@/static/icon/sorry.png" alt="" />
+        <div>非常抱歉，没有找到“{{ this.now }}”任何结果</div>
+      </div>
+      <div class="res" v-else>
+        <div class="r-title">以下是找到的关于“{{ this.now }}”结果</div>
+        <goods :goodsList="goodsList" />
+      </div>
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size="limit"
+        @prev-click="last"
+        @next-click="next"
+        @current-change="currentChange"
+        prev-text="上一页"
+        next-text="下一页"
+        :hide-on-single-page="true"
+        :current-page="page"
+      >
+      </el-pagination>
+    </div>
+  </div>
+</template>
+
+<script>
+import goods from "@/components/goods";
+import api from "@/plugins/api/api";
+export default {
+  components: {
+    goods
+  },
+  data() {
+    return {
+      history: [],
+      now: "",
+      goodsList:[],
+      show:false,
+      page:1,
+      count:1,
+      total:0,
+      limit:4
+    };
+  },
+  methods: {
+    clear() {
+      this.history = [];
+      localStorage.history = JSON.stringify(this.history);
+    },
+    del(id) {
+      this.history.splice(id, 1);
+      localStorage.history = JSON.stringify(this.history);
+    },
+    last(){
+      this.page-=1
+      api.home.getGoods({keyword:this.now,page:this.page,limit:4}).then((res)=>{
+      this.goodsList=res.data.product_info
+    })
+    },
+    next(){
+      this.page+=1
+      api.home.getGoods({keyword:this.now,page:this.page,limit:4}).then((res)=>{
+      this.goodsList=res.data.product_info
+    })
+    },
+    search(){
+      this.page=1
+      api.home.getGoods({keyword:this.now,page:this.page,limit:4}).then((res)=>{
+      this.goodsList=res.data.product_info
+      this.total=res.data.product_count
+      if(res.data.length<=0){
+        this.show=true
+      }else{
+        this.show=false
+      }
+    })
+    },
+    currentChange(e){
+      api.home.getGoods({keyword:this.now,page:e,limit:4}).then((res)=>{
+      this.goodsList=res.data.product_info
+    })
+      
+    }
+  },
+  mounted() {
+    localStorage.history
+      ? (this.history = JSON.parse(localStorage.history))
+      : (this.history = []);
+    if (this.$route.query.keyword) {
+      this.now = this.$route.query.keyword;
+      this.history.includes(this.now)
+        ? ""
+        : this.history.push(this.$route.query.keyword);
+      localStorage.history = JSON.stringify(this.history);
+    }
+    api.home.getGoods({keyword:this.now,page:this.page,limit:4}).then((res)=>{
+      this.goodsList=res.data.product_info
+      this.total=res.data.product_count
+      if(res.data.length<=0){
+        this.show=true
+      }else{
+        this.show=false
+      }
+    })
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.search {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f6f6f6;
+  .content {
+    padding: 0 0 100px 0;
+    max-width: 1200px;
+    box-sizing: border-box;
+    margin: 0 auto;
+    @include pagination;
+    .top {
+      height: 70px;
+      border-bottom: 1px solid #dcdcdc;
+    }
+    .search-input {
+      margin: 0 auto;
+      @include flex;
+      padding: 30px 0;
+      .input {
+        width: 580px;
+        height: 50px;
+        border: 1px solid #e5e5e5;
+        background: #fff;
+        padding: 0 10px;
+        box-sizing: border-box;
+        overflow: hidden;
+        transition: 0.5s linear;
+        input {
+          width: 100%;
+          height: 100%;
+        }
+        &:hover {
+          border-color: #225c45;
+        }
+        &:focus {
+          border-color: #225c45;
+        }
+      }
+      .btn {
+        cursor: pointer;
+        width: 120px;
+        height: 50px;
+        background-color: #225c45;
+        @include flex;
+        border: 0;
+        color: #fff;
+      }
+    }
+    .history {
+      max-width: 1000px;
+      margin: 0 auto;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #dcdcdc;
+      .sec1 {
+        width: 100%;
+        @include flex;
+        justify-content: space-between;
+        color: #888888;
+        .h-btn {
+          height: 35px;
+          width: 100px;
+          border-radius: 17px;
+          border: 1px solid #dcdcdc;
+          color: #333;
+          @include flex;
+          cursor: pointer;
+        }
+      }
+      .sec2 {
+        @include flex;
+        justify-content: flex-start;
+        margin-top: 15px;
+        .item {
+          background-color: #ebebeb;
+          height: 30px;
+          @include flex;
+          padding-left: 20px;
+          padding-right: 10px;
+          border-radius: 15px;
+          margin-right: 20px;
+          &:last-child {
+            margin-right: 0;
+          }
+          cursor: pointer;
+          i {
+            margin-left: 10px;
+          }
+        }
+      }
+    }
+    .noRes {
+      max-width: 1000px;
+      margin: 0 auto;
+      @include flex(column);
+      color: #888888;
+      margin-top: 80px;
+      img {
+        margin-bottom: 20px;
+      }
+    }
+    .res {
+      max-width: 1000px;
+      margin: 0 auto;
+      margin-top: 16px;
+      .r-title {
+        margin-bottom: 40px;
+        color: #888888;
+        width: 100%;
+        text-align: center;
+      }
+      /deep/.sub-content {
+        &::after {
+          content: "";
+          width: 230px;
+        }
+        .item {
+          width: 230px;
+          height: 100%;
+          margin-bottom: 30px;
+          .img {
+            width: 100%;
+            height: 230px;
+            @include flex;
+            img {
+              max-width: 230px;
+              max-height: 230px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .search {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #f6f6f6;
+    .content {
+      padding: 0 px(40) px(100) px(40);
+      width: 100%;
+      box-sizing: border-box;
+      margin: 0 auto;
+      @include pagination("m");
+      .top {
+        height: 70px;
+        border-bottom: 1px solid #dcdcdc;
+        display: none;
+      }
+      .search-input {
+        margin: 0 auto;
+        @include flex;
+        padding: 30px 0;
+        .input {
+          width: px(510);
+          height: px(75);
+          border: 1px solid #e5e5e5;
+          background: #fff;
+          padding: 0 10px;
+          box-sizing: border-box;
+          overflow: hidden;
+          transition: 0.5s linear;
+          input {
+            width: 100%;
+            height: 100%;
+          }
+          &:hover {
+            border-color: #225c45;
+          }
+          &:focus {
+            border-color: #225c45;
+          }
+        }
+        .btn {
+          cursor: pointer;
+          width: px(115);
+          height: px(75);
+          background-color: #225c45;
+          @include flex;
+          border: 0;
+          color: #fff;
+        }
+      }
+      .history {
+        width: 100%;
+        margin: 0 auto;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #dcdcdc;
+        .sec1 {
+          width: 100%;
+          @include flex;
+          justify-content: space-between;
+          color: #888888;
+          .h-btn {
+            height: px(50);
+            width: px(134);
+            border-radius: px(25);
+            border: 1px solid #dcdcdc;
+            color: #333;
+            @include flex;
+            cursor: pointer;
+          }
+        }
+        .sec2 {
+          @include flex;
+          justify-content: flex-start;
+          margin-top: 15px;
+          .item {
+            background-color: #ebebeb;
+            height: px(54);
+            @include flex;
+            padding-left: px(30);
+            padding-right: px(25);
+            border-radius: px(27);
+            margin-right: px(30);
+            &:last-child {
+              margin-right: 0;
+            }
+            cursor: pointer;
+            i {
+              margin-left: 10px;
+            }
+          }
+        }
+      }
+      .noRes {
+        width: 100%;
+        margin: 0 auto;
+        @include flex(column);
+        color: #888888;
+        margin-top: px(100);
+        font-size: px(24);
+        img {
+          width: px(80);
+          height: px(80);
+          margin-bottom: px(25);
+        }
+      }
+      .res {
+        width: 100%;
+        margin: 0 auto;
+        margin-top: 16px;
+        font-size: px(24);
+        .r-title {
+          margin-bottom: px(70);
+          color: #888888;
+          width: 100%;
+          text-align: center;
+        }
+        /deep/.sub-content {
+          padding: 0 10px;
+          box-sizing: border-box;
+          &::after {
+            content: "";
+            width: px(250);
+          }
+          .item {
+            width: px(250);
+            height: 100%;
+            margin-bottom: px(50);
+            .img {
+              width: 100%;
+              height: px(250);
+              @include flex;
+              img {
+                max-width: px(250);
+                max-height: px(250);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</style>

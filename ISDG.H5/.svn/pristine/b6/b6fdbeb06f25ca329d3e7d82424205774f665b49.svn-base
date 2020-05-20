@@ -1,0 +1,54 @@
+<template>
+  <div class="about">
+    <!-- 相关推荐 -->
+    <div class="title">相关推荐</div>
+    <div class="content">
+      <div class="item" v-for="(item, index) in 4" :key="index">
+        <div>
+          <img src="@/static/demo/demo2.png" alt="" />
+        </div>
+        <div class="name">
+          ISDG 日本进口胶原蛋白口服液液体荔枝味 50ml*10支/盒
+        </div>
+        <div class="price">￥880</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {};
+</script>
+
+<style lang="scss" scoped>
+.about {
+  width: 100%;
+  .title {
+    font-size: 24px;
+    color: #333;
+    text-align: center;
+    margin-top: 60px;
+  }
+  .content {
+    margin-top: 58px;
+    @include flex();
+    justify-content: space-between;
+    .item {
+      @include flex(column);
+      img {
+        width: 144px;
+        height: auto;
+      }
+      .name {
+        margin-top: 55px;
+        text-align: center;
+        @include ellipsis(2);
+      }
+      .price {
+        font-weight: bold;
+        margin-top: 22px;
+      }
+    }
+  }
+}
+</style>

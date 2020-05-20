@@ -1,0 +1,314 @@
+<template>
+  <div class="address">
+    <div class="content">
+      <div class="main">
+        <div class="item" v-for="(item, index) in list" :key="index">
+          <div class="left" @click="setDefault(index)">
+            <div class="cur" v-show="item.is_default"></div>
+          </div>
+          <div class="right">
+            <div class="title">
+              <div class="name">{{item.real_name}}</div>
+              
+              <div class="btns">
+                <div @click="edit(item.id)">
+                  <i class="el-icon-edit-outline"></i>
+                  <span>编辑</span>
+                </div>
+                <el-button type="text" @click="open(index)">
+                  <div>
+                    <i class="el-icon-delete"></i>
+                    <span>删除</span>
+                  </div>
+                </el-button>
+                
+              </div>
+            </div>
+            <div class="add">
+              <div>{{item.cardid}}</div>
+              <div>{{item.phone}}</div>
+              <div>{{item.province+"    "+item.city+"    "+item.district+"    "+item.detail}}</div>
+            </div>
+            <div class="tip"><span v-show="item.is_default">默认地址</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="btn" @click="add()">添加新地址</div>
+    </div>
+
+    <!-- dialog -->
+    <el-dialog
+      :title="title"
+      :visible.sync="dialogFormVisible"
+      center
+      width="80%"
+    >
+      <add v-if="hackReset" :id=listId @addChange="addChange" />
+    </el-dialog>
+  </div>
+</template>
+
+<script>
+import add from "./add";
+import api from "@/plugins/api/api";
+export default {
+  data() {
+    return {
+      dialogFormVisible: false,
+      form: {},
+      list:[],
+      listId:0,
+      hackReset:false,
+      title:""
+    };
+  },
+  components: {
+    add
+  },
+  methods:{
+    reset() {
+		this.hackReset = false
+	      	this.$nextTick(() => {
+	       		this.hackReset = true
+	      	})
+      },
+    addChange(val){
+      this.dialogFormVisible=false;
+      api.personal.addressList().then((res)=>{
+        this.list=res.data
+      })
+    },
+    getAddress(){
+      api.personal.addressList().then((res)=>{
+        this.list=res.data
+      })
+    },
+    setDefault(index){
+      api.personal.addressDefault({id:this.list[index].id}).then((res)=>{
+        if(res.status==200){
+          this.list[index].is_default=1
+          for(var i=0; i<this.list.length; i++){
+            if(i!=index){
+              this.list[i].is_default=0
+            }
+          }
+        }
+      })
+      console.log(this.list[index].is_default)
+    },
+    edit(a){
+      this.listId=a
+      this.dialogFormVisible=true
+      this.reset()
+      this.title="编辑地址"
+      
+    },
+    add(){
+      this.listId=0
+      this.dialogFormVisible=true
+      this.reset()
+      this.title="新建地址"
+    },
+    open(index) {
+        this.$confirm('你确认要删除该地址吗', '删除地址', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: ''
+        }).then(() => {
+          api.personal.delAddress({id:this.list[index].id}).then((res)=>{
+            if(res.status==200){
+              this.list.splice(index,1)
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+            }
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });          
+        });
+      }
+  },
+  created(){
+    this.getAddress()
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.address {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f7f4f8;
+}
+/deep/.el-popup-parent--hidden {
+  padding: 0 !important;
+}
+.main {
+  width: 100%;
+  @include flex;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  justify-content: space-between;
+  .item {
+    width: 350px;
+    height: 195px;
+    background-color: #fff;
+    @include flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 20px;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+    .left {
+      width: 17px;
+      height: 17px;
+      background: rgba(255, 255, 255, 1);
+      border: 1px solid rgba(201, 201, 201, 1);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .cur{
+       width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      cursor: pointer;
+      background: rgb(51, 51, 51);
+    }
+    .right {
+      @include flex(column);
+      width: 100%;
+      height: 100%;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding-left: 20px;
+      box-sizing: border-box;
+      .title {
+        width: 100%;
+        margin-top: -10px;
+        @include flex;
+        justify-content: space-between;
+        .btns {
+          @include flex;
+          justify-content: flex-start;
+          div {
+            cursor: pointer;
+            span {
+              color: #666666;
+            }
+            i {
+              color: #666666;
+            }
+          }
+          div:first-child {
+            margin-right: 10px;
+          }
+        }
+      }
+      .add {
+        div:not(:last-child) {
+          color: #888888;
+          margin-bottom: 10px;
+        }
+      }
+      .tip {
+        color: #666;
+      }
+    }
+    &:nth-child(3n) {
+      margin-right: 0;
+    }
+  }
+}
+.btn {
+  width: 150px;
+  height: 45px;
+  background-color: #225c45;
+  @include flex;
+  margin: 0 auto;
+  margin-top: 10px;
+  cursor: pointer;
+  color: #fff;
+}
+
+@media screen and (max-width: 768px) {
+  .main {
+    width: 100%;
+    @include flex;
+    flex-wrap: wrap;
+    .item {
+      border-left: 0;
+      border-right: 0;
+      width: 100%;
+      height: 195px;
+      background-color: #fff;
+      @include flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      padding: 20px;
+      box-sizing: border-box;
+      margin-bottom: px(31);
+      font-size: px(26);
+      .left {
+        width: px(30);
+        height: px(30);
+        background: rgba(255, 255, 255, 1);
+        border: 1px solid rgba(201, 201, 201, 1);
+        border-radius: 50%;
+        cursor: pointer;
+      }
+      .right {
+        @include flex(column);
+        width: 100%;
+        height: 100%;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding-left: 20px;
+        box-sizing: border-box;
+        .title {
+          width: 100%;
+          @include flex;
+          justify-content: space-between;
+          .btns {
+            @include flex;
+            justify-content: flex-start;
+            div {
+              cursor: pointer;
+              span {
+                color: #666666;
+              }
+            }
+            div:first-child {
+              margin-right: 10px;
+            }
+          }
+        }
+        .add {
+          div:not(:last-child) {
+            color: #888888;
+            margin-bottom: 10px;
+          }
+        }
+        .tip {
+          color: #666;
+        }
+      }
+      &:nth-child(3n) {
+        margin-right: 0;
+      }
+    }
+  }
+  .btn {
+    width: px(700);
+    height: px(80);
+    background-color: #225c45;
+    @include flex;
+    margin: 0 auto;
+    margin-top: 10px;
+    color: #fff;
+  }
+}
+</style>

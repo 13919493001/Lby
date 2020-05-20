@@ -1,0 +1,165 @@
+<template>
+  <div class="order">
+    
+    <banner />
+    <!--  -->
+    <section class="content">
+      <order :List="List">
+        <div class="menu">
+          <div
+            v-for="(item, index) in menu"
+            :key="index"
+            class="item"
+            :class="{ active: active === index }"
+            @click="changeAtive(index)"
+          >
+            {{ item }}
+          </div>
+        </div>
+      </order>
+      <!-- 相关推荐 -->
+      <about class="hidden-xs-only" />
+    </section>
+    
+  </div>
+</template>
+
+<script>
+
+
+import banner from "@/components/common/banner";
+import about from "@/components/about";
+import order from "@/components/order";
+import api from "@/plugins/api/api";
+export default {
+  data() {
+    return {
+      menu: ["全部", "待付款", "待收货", "已完成", "已取消"],
+      active: 0,
+      List:[],
+      show:false,
+      list:[],
+      comList:[]
+    };
+  },
+  methods:{
+    changeAtive:function(index){
+      this.active=index
+      if(this.active==0){
+          this.List=this.comList
+      }else if(this.active==1){
+        this.list=[]
+        for(var i=0; i<this.comList.length; i++){
+          if(this.comList[i]._status._type==0){
+            this.list.push(this.comList[i])
+          }
+        }
+        this.List=this.list
+      }else if(this.active==2){
+         this.list=[]
+        for(var i=0; i<this.comList.length; i++){
+          if(this.comList[i]._status._type==1){
+            this.list.push(this.comList[i])
+          }
+        }
+        this.List=this.list
+      }else if(this.active==3){
+        this.list=[]
+        for(var i=0; i<this.comList.length; i++){
+          if(this.comList[i]._status._type==3){
+            this.list.push(this.comList[i])
+          }
+        }
+        this.List=this.list
+      }else if(this.active==4){
+        
+      }
+    },
+    orderList:function(){
+      api.personal.orderList().then((res)=>{
+        this.List=res.data
+        this.comList=res.data
+        // for(var i=0; i<this.List.length; i++){
+        //   eval(this.List[i].show=false);
+        // }
+      })
+    }
+  },
+   mounted:function(){
+    this.orderList()
+
+  },
+  components: {
+    banner,
+    about,
+    order,
+  },
+  created:function(){
+    this.active=this.$route.query.id
+    // if(this.active==1){
+    //    api.personal.orderList().then((res)=>{
+    //      for(var i=0; i<res.data.length; i++){
+    //       if(res.data[i]._status._type==0){
+    //         this.List.push(res.data[i])
+    //         console.log(1,this.List);
+    //       }
+    //     }
+    //   })
+    // }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.order {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f3f0f3;
+  .content {
+    max-width: 1200px;
+    padding: 30px;
+    box-sizing: border-box;
+    background-color: #fff;
+    margin: 0 auto;
+    margin-top: -30px;
+    position: relative;
+    z-index: 2;
+    margin-bottom: 40px;
+    .menu {
+      @include flex;
+      .item {
+        padding: 6px 17px;
+        @include flex;
+        color: #333333;
+        font-size: 14px;
+        cursor: pointer;
+        margin-right: 30px;
+      }
+      .active {
+        background-color: #225c45;
+        color: #fff;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .order {
+    .content {
+      width: 100%;
+      padding: px(30) px(10) px(30) px(10);
+      margin-top: px(-30);
+      margin-bottom: px(80);
+      .menu {
+        @include flex;
+        justify-content: space-between;
+        .item {
+          padding: px(13) px(33);
+          font-size: px(24);
+          margin-right: 0;
+        }
+      }
+    }
+  }
+}
+</style>

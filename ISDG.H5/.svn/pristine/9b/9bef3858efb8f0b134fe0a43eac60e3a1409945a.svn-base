@@ -1,0 +1,38 @@
+export default ({ app }) => {
+  app.router.afterEach((to, from) => {
+    window.scrollTo(0, 0); /* 页面切换回顶部 */
+  });
+};
+
+// const router = new Router({
+//   routes: [
+//     {
+//       //登陆
+//       path:'/Login',
+//       component:Login
+//     },
+//     {
+//       //用户中心
+//       path:'/personal',
+//       component:personal,
+//       meta: {
+//         requireAuth: true
+//       },
+//     }
+//   ]
+// })
+// router.beforeEach((to, from, next) => {
+//   if (to.matched.some(res => res.meta.requireAuth)) {// 判断是否需要登录权限
+//     if (sessionStorage.getItem('userToken')) {// 判断是否登录
+//       next()
+//     } else {// 没登录则跳转到登录界面
+//       next({
+//         path: '/Login',
+//         query: {redirect: to.fullPath}
+//       })
+//     }
+//   } else {
+//     next()
+//   }
+// })
+// export default router

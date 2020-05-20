@@ -1,0 +1,48 @@
+<template>
+  <div class="password">
+    <banner />
+    <my-form
+      :status="3"
+      :placeholder="placeholder"
+      title="修改密码"
+      @submit="submit"
+    />
+    <tabbar />
+  </div>
+</template>
+
+<script>
+import banner from "@/components/common/banner";
+import myForm from "@/components/form";
+
+export default {
+  components: {
+    banner,
+    myForm
+  },
+  data() {
+    return {
+      placeholder: {
+        p1: "请输入原手机号码",
+        p2: "请输入短信验证码",
+        p3: "发送短信",
+        p4: "确认",
+        p5: "密码"
+      }
+    };
+  },
+  methods: {
+    submit(form) {
+      console.log(form);
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.password {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f3f0f3;
+}
+</style>

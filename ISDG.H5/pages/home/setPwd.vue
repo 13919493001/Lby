@@ -1,0 +1,125 @@
+<template>
+  <div class="reg">
+    <div class="content">
+      <div class="title">
+        <div>
+          找回密码
+        </div>
+      </div>
+      <my-form :status="7" :placeholder="reg" @submit="submit" />
+    </div>
+  </div>
+</template>
+
+<script>
+import banner from "@/components/common/banner";
+import myForm from "@/components/form";
+import api from "@/plugins/api/api";
+export default {
+  components: {
+    banner,
+    myForm
+  },
+  data() {
+    return {
+      reg: {
+        p5: "请输入新密码",
+        p4: "确认"
+      }
+    };
+  },
+  methods: {
+    submit(form) {
+      console.log(form);
+      let  params = {
+        account: this.$route.query.account,
+        captcha:this.$route.query.captcha,
+        password:form.pwd
+      };
+      if(form.pwd === form.repwd) {
+        api.login.registerReset(params).then(res => {
+          console.log(res)
+          if(res.status === 200) {
+            this.$message({
+              message: res.msg,
+              type: 'success'
+            });
+          }
+          else {
+            this.$message.error(res.msg);
+          }
+        })
+      }
+    },
+    open() {
+      this.dialogVisible = true;
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.reg {
+  width: 100%;
+  height: 100%;
+  background-color: #f6f6f6;
+  .content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 0;
+    .title {
+      @include flex;
+      height: 40px;
+      border-bottom: 1px solid #dcdcdc;
+      div {
+        height: 100%;
+        @include flex;
+        cursor: pointer;
+      }
+    }
+    .form {
+      margin-top: 0;
+      background-color: #f6f6f6;
+      height: 100% !important;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .reg {
+    background-color: #fbf8fb;
+  }
+  .content {
+    width: 100%;
+    margin: 0 auto;
+    padding: px(80) 0;
+    .title {
+      @include flex;
+      height: 40px;
+      border-bottom: 1px solid #dcdcdc;
+      font-size: px(36);
+      div {
+        height: 100%;
+        @include flex;
+        cursor: pointer;
+      }
+    }
+    .form {
+      margin-top: 0;
+      background-color: #fbf8fb !important;
+      height: 100% !important;
+      /deep/.el-form {
+        width: px(666);
+        .el-input__inner {
+          height: px(80);
+          border-radius: 2px;
+        }
+        .btn2 {
+          height: px(80);
+          border-radius: 2px;
+        }
+      }
+    }
+  }
+}
+</style>

@@ -1,0 +1,176 @@
+<template>
+  <div class="news">
+    <banner />
+    <div class="content">
+      <div class="title">
+        <div>News</div>
+        <div>品牌资讯</div>
+      </div>
+      <div class="items">
+        <div class="item" v-for="(item, index) in 6" :key="index">
+          <img src="@/static/demo/demo1.png" alt="" />
+          <div class="stitle" @click="jump">
+            2016年度跨界合作最佳案例奖花落ISDG
+          </div>
+          <div class="date">2019-10-25</div>
+          <div class="text">
+            全球知名护肤品和彩妆品直销企业玫琳凯荣获2016年度“绿色发展 共享未来”
+            企业社会责任优秀案例评选年度跨界合作最佳案例奖。作
+          </div>
+        </div>
+      </div>
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="36"
+        prev-text="上一页"
+        next-text="下一页"
+        :pager-count="5"
+      >
+      </el-pagination>
+    </div>
+  </div>
+</template>
+
+<script>
+import banner from "@/components/news/banner";
+export default {
+  components: {
+    banner
+  },
+  methods: {
+    jump() {
+      this.$router.push("news/detail");
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.news {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #fffeff;
+}
+.content {
+  padding: 65px 10px 88px 10px;
+  max-width: 1200px;
+  margin: 0 auto;
+  box-sizing: border-box;
+  @include pagination;
+  .title {
+    width: 100%;
+    text-align: center;
+    div:first-child {
+      font-size: 55px;
+      color: #e0e0e0;
+    }
+    div:last-child {
+      font-size: 18px;
+      margin-top: 10px;
+    }
+  }
+  .items {
+    margin-top: 50px;
+    @include flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    .item {
+      margin-bottom: 50px;
+      width: 30%;
+      text-align: center;
+      img {
+        max-width: 100%;
+        height: auto;
+        object-fit: cover;
+      }
+      .stitle {
+        width: 100%;
+        font-size: 20px;
+        margin-top: 50px;
+        text-align: left;
+        cursor: pointer;
+      }
+      .date {
+        width: 100%;
+        color: #888888;
+        margin-top: 20px;
+        text-align: left;
+      }
+      .text {
+        width: 100%;
+        height: 72px;
+        text-align: left;
+        line-height: 24px;
+        color: #666666;
+        @include ellipsis(3);
+        margin-top: 25px;
+      }
+    }
+  }
+}
+@media screen and (max-width: 768px) {
+  .news {
+    width: 100%;
+    min-height: 100vh;
+    background-color: #f7f4f8;
+  }
+  .content {
+    padding: px(36) 10px px(80) 10px;
+    width: 100%;
+    margin: 0 auto;
+    @include pagination("m");
+    .title {
+      width: 100%;
+      text-align: center;
+      div:first-child {
+        font-size: px(80);
+        color: #e0e0e0;
+      }
+      div:last-child {
+        font-size: px(30);
+        margin-top: 10px;
+      }
+    }
+    .items {
+      margin-top: px(50);
+      @include flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      .item {
+        margin-bottom: px(80);
+        width: 100%;
+        text-align: center;
+        img {
+          max-width: 100%;
+          height: auto;
+          object-fit: cover;
+        }
+        .stitle {
+          width: 100%;
+          font-size: px(30);
+          margin-top: px(50);
+          text-align: left;
+        }
+        .date {
+          width: 100%;
+          color: #888888;
+          font-size: px(20);
+          margin-top: px(20);
+          text-align: left;
+        }
+        .text {
+          width: 100%;
+          height: px(72);
+          text-align: left;
+          line-height: px(24);
+          color: #666666;
+          @include ellipsis(3);
+          margin-top: px(25);
+          font-size: px(24);
+        }
+      }
+    }
+  }
+}
+</style>

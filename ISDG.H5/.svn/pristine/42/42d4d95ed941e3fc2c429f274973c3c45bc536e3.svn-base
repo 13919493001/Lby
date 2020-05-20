@@ -1,0 +1,152 @@
+<template>
+  <div class="shareCode">
+    
+    <banner />
+    <div class="content">
+      <div class="img">
+        <img src="@/static/icon/share.jpg" alt="" />
+        <div>ISDG</div>
+        <div>
+          <div>180***4575</div>
+          <div class="user">用户ID：1124512124212</div>
+        </div>
+      </div>
+      <div class="code"></div>
+      <div class="tip">扫描二维码，关注我的信息</div>
+      <div class="btn">保存图片</div>
+    </div>
+    
+  </div>
+</template>
+
+<script>
+
+
+import banner from "@/components/common/banner";
+export default {
+  data() {
+    return {
+      active: 0
+    };
+  },
+  components: {
+    banner,
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.shareCode {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f3f0f3;
+  .content {
+    max-width: 1200px;
+    padding: 70px 30px 80px 30px;
+    box-sizing: border-box;
+    background-color: #fff;
+    margin: 0 auto;
+    margin-top: -30px;
+    position: relative;
+    z-index: 2;
+    margin-bottom: 50px;
+    @include flex(column);
+    .img {
+      width: 437px;
+      height: 240px;
+      position: relative;
+      color: #fff;
+      @include flex(column);
+      align-items: flex-start;
+      justify-content: space-between;
+      padding-top: 28px;
+      padding-bottom: 56px;
+      padding-left: 29px;
+      box-sizing: border-box;
+      img {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+      }
+      .user {
+        margin-top: 10px;
+      }
+    }
+    .code {
+      width: 437px;
+      height: 414px;
+      background-color: #fff;
+      box-shadow: 0px 0px 15px 0px rgba(0, 0, 0, 0.1);
+    }
+    .tip {
+      margin-top: 34px;
+      color: #888;
+    }
+    .btn {
+      width: 185px;
+      height: 45px;
+      @include flex;
+      color: #fff;
+      background-color: #225c45;
+      margin-top: 41px;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .shareCode {
+    .content {
+      width: 100%;
+      padding: px(92) px(20) px(150) px(20);
+      margin-top: px(-30);
+      margin-bottom: 0;
+      .img {
+        width: px(607);
+        height: px(333);
+        position: relative;
+        color: #fff;
+        @include flex(column);
+        align-items: flex-start;
+        justify-content: space-between;
+        padding-top: px(36);
+        padding-bottom: px(59);
+        padding-left: px(44);
+        box-sizing: border-box;
+        img {
+          width: 100%;
+          height: 100%;
+          position: absolute;
+          top: 0;
+          left: 0;
+          z-index: -1;
+        }
+        .user {
+          margin-top: px(10);
+        }
+      }
+      .code {
+        width: px(607);
+        height: px(575);
+        background-color: #fff;
+        box-shadow: 0px 0px px(15) 0px rgba(0, 0, 0, 0.1);
+      }
+      .tip {
+        margin-top: px(62);
+        font-size: px(24);
+        color: #888;
+      }
+      .btn {
+        width: px(700);
+        height: px(80);
+        @include flex;
+        color: #fff;
+        background-color: #225c45;
+        margin-top: px(96);
+      }
+    }
+  }
+}
+</style>

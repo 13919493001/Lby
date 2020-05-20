@@ -1,0 +1,140 @@
+<template>
+  <div class="contactus">
+    <img :src="imgUrl" alt="" class="banner" />
+    <div class="content">
+      <div class="box" v-for="(item,index) in list" :key="index">
+        <p class="text1">{{item.title}}</p>
+        <p class="text2">{{item.synopsis}}</p>
+        <img v-for="(items,idx) in item.image_input" :key="idx" class="img" :src="items" alt="">
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import api from '@/plugins/api/api'
+export default {
+  data(){
+    return{
+      imgUrl:"",
+      limit:4,
+      list:[],
+      img:"",
+      viewTop:0
+    }
+  },
+  mounted(){
+     api.home.shoppingGuides().then((res)=>{
+        this.imgUrl=res.data[3].image
+       
+      })
+      api.home.articleList(13,{page:0,limit:this.limit}).then((res)=>{
+        this.list=res.data
+      })
+      // window.onscroll = function() {
+      // var that=this
+      // var scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+      // console.log("滚动距离" + scrollTop);
+      // that.viewTop=document.body.scrollHeight-700
+      // console.log(document.body.scrollHeight,that.viewTop);
+      // if(scrollTop>=that.viewTop){
+      //   that.limit+=4
+      //   api.home.articleList(13,{page:0,limit:this.limit}).then((res)=>{
+      //   this.list=res.data
+      // })
+      // }
+
+      // }
+      
+      
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.contactus {
+  width: 100%;
+  background-color: #f7f4f8;
+}
+.banner {
+  width: 100%;
+  height: 580px;
+}
+.content {
+  max-width: 1200px;
+  padding: 56px 10px 74px 10px;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+.text1{
+  width: 1213px;
+  height: 24px;
+  font-family: MicrosoftYaHei-Bold;
+  font-size: 24px;
+  font-weight: normal;
+  font-stretch: normal;
+  line-height: 55px;
+  letter-spacing: 0px;
+  color: #333333;
+  text-align: center;
+}
+.text2 {
+  width: 1186px;
+  min-height: 200px;
+  font-family: MicrosoftYaHei;
+  font-size: 14px;
+  font-weight: normal;
+  font-stretch: normal;
+  line-height: 30px;
+  letter-spacing: 0px;
+  color: #333333;
+  margin-top: 52px;
+
+}
+.img{
+  width: 1200px;
+  height: 466px;
+  margin-top: 65px;
+}
+
+@media screen and (max-width: 768px) {
+  .banner {
+    width: 100%;
+    height: px(400);
+  }
+  .content {
+    width: 100%;
+    padding: px(77) 10px px(84) 10px;
+    box-sizing: border-box;
+  }
+  .text1{
+      width: 100%;
+      height: px(24);
+      font-family: MicrosoftYaHei-Bold;
+      font-size: px(24);
+      font-weight: normal;
+      font-stretch: normal;
+      line-height: px(53);
+      letter-spacing: 0px;
+      color: #333333;
+      text-align: center;
+  }
+  .text2{
+      width:100%;
+      min-height: px(200);
+      font-family: MicrosoftYaHei;
+      font-size: px(14);
+      font-weight: normal;
+      font-stretch: normal;
+      line-height: px(30);
+      letter-spacing: 0px;
+      color: #333333;
+      margin-top: px(52);
+  }
+  .img{
+      width: 100%;
+	  height: px(446);
+      margin-top: px(65);
+  }
+}
+</style>

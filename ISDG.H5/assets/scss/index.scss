@@ -1,0 +1,231 @@
+/* 超出隐藏 */
+@mixin ellipsis($rowCount: 1) {
+  @if $rowCount <=1 {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  } @else {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: $rowCount;
+    -webkit-box-orient: vertical;
+  }
+}
+
+/* flex */
+@mixin flex($direction: row) {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: $direction;
+}
+
+/* h5 px/2 */
+@function px($px) {
+  @return $px / 2 * 1px;
+}
+
+/* 分页 pc */
+@mixin pagination($flag: "pc") {
+  @if $flag == "pc" {
+    /deep/.el-pagination {
+      @include flex;
+      .btn-prev {
+        text-align: center;
+        padding: 0 20px;
+        height: 35px;
+        background-color: #fff;
+        border: 1px solid #e5e5e5;
+      }
+      .btn-next {
+        @extend .btn-prev;
+      }
+      li {
+        height: 35px;
+        min-width: 35px;
+        line-height: 35px;
+        text-align: center;
+        background-color: #fff;
+        border: 1px solid #e5e5e5;
+        &:hover:not(.active) {
+          color: #333;
+        }
+      }
+      .active {
+        background-color: #000 !important;
+      }
+    }
+  } @else {
+    /deep/.el-pagination {
+      width: 100%;
+      @include flex;
+      box-sizing: border-box;
+      padding: 0;
+      .btn-prev {
+        padding: 0;
+        line-height: px(50);
+        height: px(50);
+        background-color: #fff;
+        border: 1px solid #e5e5e5;
+        text-align: center;
+        width: px(111);
+        box-sizing: border-box;
+        span {
+          height: px(50);
+          font-size: px(20);
+        }
+      }
+      li {
+        height: px(50);
+        min-width: px(50);
+        line-height: px(50);
+        font-size: px(20);
+        text-align: center;
+        background-color: #fff;
+        border: 1px solid #e5e5e5;
+        &:hover:not(.active) {
+          color: #333;
+        }
+      }
+      .active {
+        background-color: #000 !important;
+      }
+    }
+  }
+}
+
+/* 分页 h5 */
+@mixin pagination-m() {
+  /deep/.el-pagination {
+    width: 100%;
+    @include flex;
+    .btn-prev {
+      padding: 0;
+      line-height: px(50);
+      height: px(50);
+      background-color: #fff;
+      border: 1px solid #e5e5e5;
+      text-align: center;
+      width: px(111);
+      box-sizing: border-box;
+      span {
+        height: px(50);
+        font-size: px(20);
+      }
+    }
+    li {
+      height: px(50);
+      min-width: px(50);
+      line-height: px(50);
+      font-size: px(20);
+      text-align: center;
+      background-color: #fff;
+      border: 1px solid #e5e5e5;
+      &:hover:not(.active) {
+        color: #333;
+      }
+    }
+    .active {
+      background-color: #000 !important;
+    }
+  }
+}
+
+/* 表单样式 */
+@mixin form() {
+  /deep/.el-form {
+    margin-top: 40px;
+    width: 100%;
+    .checkbox {
+      @include flex;
+      justify-content: flex-start;
+      .checkbox_inner {
+        width: 18px;
+        height: 18px;
+        @include flex;
+        border: 1px solid #333;
+        cursor: pointer;
+        i {
+          color: #333;
+          font-size: 18px;
+        }
+      }
+      .checkbox_text {
+        margin-left: 10px;
+        font-size: 14px;
+      }
+    }
+    .date {
+      margin-top: 10px;
+      .el-input__inner {
+        width: 200px;
+      }
+    }
+    .el-form-item__label {
+      padding: 0;
+    }
+    .el-input__inner {
+      height: 45px;
+      border-radius: 0;
+      line-height: 45px;
+      &:focus {
+        border-color: #225c45;
+      }
+    }
+  }
+}
+
+/* 表单样式h5  */
+@mixin form-m() {
+  /deep/.el-form {
+    margin-top: px(50);
+    width: 100%;
+    .el-form-item__label {
+      height: px(24);
+      font-size: px(24) !important;
+      line-height: px(24) !important;
+    }
+    .el-form-item__error {
+      font-size: px(20);
+    }
+    .checkbox {
+      @include flex;
+      justify-content: flex-start;
+      .checkbox_inner {
+        width: px(28) !important;
+        height: px(28) !important;
+        @include flex;
+        border: 1px solid #333;
+        cursor: pointer;
+        i {
+          color: #333;
+          font-size: px(26) !important;
+        }
+      }
+      .checkbox_text {
+        margin-left: px(10) !important;
+        font-size: px(24) !important;
+      }
+    }
+    .date {
+      margin-top: px(20);
+      .el-input__inner {
+        width: px(320);
+      }
+    }
+    .el-form-item__label {
+      padding: 0;
+    }
+    .el-input__inner {
+      height: px(60) !important;
+      border-radius: 0;
+      line-height: px(60) !important;
+      font-size: px(20);
+      &:focus {
+        border-color: #225c45;
+      }
+    }
+  }
+}

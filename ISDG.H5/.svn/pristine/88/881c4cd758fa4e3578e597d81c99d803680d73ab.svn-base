@@ -1,0 +1,166 @@
+<template>
+  <div v-swiper:swiper="swiperOption" class="swiper-option">
+    <div class="swiper-wrapper">
+      <div
+        class="item swiper-slide"
+        v-for="(item, index) in msg"
+        :key="index"
+        @click="goodsDetail(item.id)"
+        @mouseover="
+          isHover = true;
+          hoverIndex = index;
+        "
+        @mouseleave="isHover = false"
+      >
+        <div class="img">
+          <img :src="item.image" alt="" />
+          <el-collapse-transition>
+            <div class="popup" v-if="isHover && hoverIndex === index">
+              <div class="p-text">learn more</div>
+            </div>
+          </el-collapse-transition>
+        </div>
+        <div class="item-title">
+          {{item.store_name}}
+        </div>
+        <div class="item-price">
+          {{item.price}}
+        </div>
+      </div>
+    </div>
+    <!-- <div class="swiper-pagination2"></div> -->
+  </div>
+</template>
+
+<script>
+export default {
+  props:["msg"],
+  data() {
+    return {
+      swiperOption: {
+        slidesPerView: "auto",
+        spaceBetween: 50
+        /*   pagination: {
+          el: ".swiper-pagination2"
+        } */
+      },
+      isHover: false,
+      hoverIndex: -1
+    };
+  },
+  methods: {
+    goodsDetail(id) {
+      this.$router.push({path:'/components/goodsDetail',query:id})
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.swiper-option {
+  margin-top: 40px;
+  width: 100%;
+  padding-bottom: 30px;
+  .item {
+    width: 260px;
+    height: 100%;
+    margin-bottom: 24px;
+    font-size: 14px;
+    .img {
+      width: 100%;
+      height: 260px;
+      @include flex;
+      background-color: #fff;
+      cursor: pointer;
+      position: relative;
+      img {
+        width: auto;
+        max-height: 260px;
+        object-fit: cover;
+      }
+      .popup {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: rgba(30, 84, 67, 0.6);
+        @include flex(column);
+        cursor: pointer;
+        .p-text {
+          padding: 10px 5px;
+          border-top: 1px solid #fff;
+          border-bottom: 1px solid #fff;
+          color: #fff;
+        }
+      }
+    }
+    .item-title {
+      height: 48px;
+      line-height: 24px;
+      text-align: center;
+      width: 100%;
+      margin-top: 30px;
+      @include ellipsis(2);
+    }
+    .item-price {
+      margin-top: 20px;
+      width: 100%;
+      text-align: center;
+      font-weight: bold;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .swiper-option {
+    margin-top: px(62);
+    width: 100%;
+    padding-bottom: 0;
+    .item {
+      width: px(216);
+      height: 100%;
+      margin-bottom: 24px;
+      font-size: px(24);
+      .img {
+        width: 100%;
+        height: px(216);
+        @include flex;
+        background-color: #fff;
+        cursor: pointer;
+        position: relative;
+        img {
+          width: auto;
+          max-height: px(216);
+          object-fit: cover;
+        }
+        .popup {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          background: rgba(30, 84, 67, 0.6);
+          @include flex(column);
+          cursor: pointer;
+          .p-text {
+            padding: 10px 5px;
+            border-top: 1px solid #fff;
+            border-bottom: 1px solid #fff;
+            color: #fff;
+          }
+        }
+      }
+      .item-title {
+        height: px(50);
+        line-height: px(25);
+        text-align: center;
+        width: 100%;
+        margin-top: px(54);
+        @include ellipsis(2);
+      }
+      .item-price {
+        margin-top: px(27);
+        width: 100%;
+        text-align: center;
+      }
+    }
+  }
+}
+</style>

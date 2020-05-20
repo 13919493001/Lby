@@ -1,0 +1,105 @@
+<template>
+  <div>
+    
+    <banner />
+    <div class="content">
+      <div class="title">系统通知</div>
+      <div class="date">2019-12-25 17:34</div>
+      <div class="main">
+        消息内容，点击该板块，就进入消息详情，仅显示一排内容，这里，超过的显示省略号。消息内容，点击该板块，就进入消息详情，仅显示一排
+      </div>
+      <div class="bottom">
+        <div class="prev">上一条：恭喜你，提现审核通过！</div>
+        <div class="next">上一条：恭喜你，提现审核通过！ 拷贝</div>
+      </div>
+    </div>
+    
+  </div>
+</template>
+
+<script>
+
+
+import banner from "@/components/common/banner";
+export default {
+  components: {
+    
+    banner
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.content {
+  max-width: 1200px;
+  padding: 30px 10px 70px 10px;
+  box-sizing: border-box;
+  @include flex(column);
+  margin: 0 auto;
+  justify-content: flex-start;
+  .title {
+    font-size: 24px;
+  }
+  .date {
+    width: 100%;
+    margin-top: 16px;
+    text-align: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #dcd9d9;
+  }
+  .main {
+    margin-top: 23px;
+    width: 100%;
+    padding-bottom: 50px;
+  }
+  .bottom {
+    width: 100%;
+    @include flex;
+    justify-content: space-between;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .content {
+    width: 100%;
+    padding: px(50) 10px px(70) 10px;
+    box-sizing: border-box;
+    @include flex(column);
+    margin: 0 auto;
+    justify-content: flex-start;
+    .title {
+      font-size: px(36);
+    }
+    .date {
+      width: 100%;
+      margin-top: px(18);
+      text-align: center;
+      padding-bottom: px(20);
+      border-bottom: 1px solid #dcd9d9;
+      font-size: px(20);
+    }
+    .main {
+      margin-top: px(30);
+      width: 100%;
+      padding-bottom: 50px;
+      font-size: px(20);
+    }
+    .bottom {
+      width: 100%;
+      font-size: px(24);
+      @include flex(column);
+      align-items: flex-start;
+      div {
+        width: 100%;
+      }
+      .prev {
+        padding-bottom: px(24);
+        border-bottom: 1px solid #dfdede;
+      }
+      .next {
+        padding-top: px(24);
+      }
+    }
+  }
+}
+</style>

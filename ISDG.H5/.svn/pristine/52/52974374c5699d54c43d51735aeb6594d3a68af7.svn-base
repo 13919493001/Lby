@@ -1,0 +1,41 @@
+<template>
+  <div class="contactus">
+    <img src="@/static/icon/story.png" alt="" class="banner" />
+    <div class="content"></div>
+  </div>
+</template>
+
+<script>
+export default {};
+</script>
+
+<style lang="scss" scoped>
+.contactus {
+  width: 100%;
+  background-color: #f7f4f8;
+}
+.banner {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+.content {
+  max-width: 1200px;
+  padding: 56px 10px 74px 10px;
+  box-sizing: border-box;
+  margin: 0 auto;
+}
+
+@media screen and (max-width: 768px) {
+  .banner {
+    width: 100%;
+    height: px(400);
+    object-fit: cover;
+  }
+  .content {
+    width: 100%;
+    padding: px(77) 10px px(84) 10px;
+    box-sizing: border-box;
+  }
+}
+</style>

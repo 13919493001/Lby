@@ -1,0 +1,344 @@
+<template>
+  <div>
+    <div class="g-content">
+      <div class="title">团购促销</div>
+      <div class="s-title">每天上新 惊喜不断</div>
+      <div
+        v-swiper:swiper="swiperOptionTop2"
+        class="swiper-container hidden-xs-only"
+      >
+        <div class="swiper-wrapper">
+          <div
+            class="swiper-slide g-item"
+            v-for="(item, index) in groupList"
+            :key="index"
+          >
+            <div class="left">
+              <div class="l-img">
+                <img :src="item.image" alt="" />
+              </div>
+              <div>￥{{item.product_price}}</div>
+            </div>
+            <div class="right">
+              <div class="r-title">{{item.title}}</div>
+              <div class="r-s-title">{{item.combo}}</div>
+              <div class="price">￥{{item.price}}</div>
+              <div class="tip">
+                {{item.product_info.length}}件单买，共需花费 <span>￥{{item.product_price}}</span> ；本次团购，只需要
+                <span>￥{{item.price}}</span>
+              </div>
+              <div class="box">
+                <div class="btn" @click="purchase(index)">
+                  <img src="@/static/icon/icon5.png" alt="" />
+                  <div>立即购买</div>
+                </div>
+                <div class="b-item" v-for="(itm, idx) in item.product_info" :key="idx">
+                  <img :src="itm.image" alt="" />
+                  <div>￥{{itm.price}}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-pagination"></div>
+        <!--分页器。如果放置在swiper-container外面，需要自定义样式。-->
+      </div>
+
+      <!-- h5 -->
+      <div
+        v-swiper:swiper="swiperOptionTop2"
+        class="swiper-container hidden-sm-and-up"
+      >
+        <div class="swiper-wrapper">
+          <div
+            class="swiper-slide g-item"
+            v-for="(item, index) in groupList"
+            :key="index"
+          >
+            <div class="r-title">{{item.title}}</div>
+            <div class="r-s-title">{{item.combo}}</div>
+            <div class="price">￥{{item.price}}</div>
+            <div class="tip">
+              3件单买，共需花费 <span>￥{{item.product_price}}</span> ；本次团购，只需要
+              <span>￥{{item.price}}</span>
+            </div>
+            <div class="l-img">
+              <img :src="item.image" alt="" />
+            </div>
+            <div class="l-price">￥{{item.price}}</div>
+            <div class="box">
+              <div class="btn" @click="purchase(index)">
+                <img src="@/static/icon/icon5.png" alt="" />
+                <div>立即购买</div>
+              </div>
+              <div class="b-item" v-for="(itm, idx) in item.product_info" :key="idx">
+                 <img :src="itm.image" alt="" />
+                  <div>￥{{itm.price}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="swiper-pagination"></div>
+        <!--分页器。如果放置在swiper-container外面，需要自定义样式。-->
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import api from "@/plugins/api/api";
+export default {
+  data() {
+    return {
+      swiperOptionTop2: {
+        autoplay: true,
+        loop: true,
+        pagination: {
+          el: ".swiper-pagination"
+        }
+      },
+      groupList:[],
+      combo:"",
+      cartId:"",
+      choose:false,
+      idList:[],
+      groupId:0,
+      numList:[],
+      payMoney:0
+    };
+  },
+  methods:{
+      purchase(index){
+      this.groupId=this.groupList[index].id
+      this.$router.push({name:"order", params: {id:this.groupList[index].idList,comNum:this.groupList[index].product_info.length,groupId:this.groupId,numList:this.groupList[index].numList,payMoney:this.groupList[index].payMoney}});
+    },
+  },
+  mounted(){
+    api.home.getGroupList().then((res)=>{
+      this.groupList=res.data
+      for(var i=0; i<this.groupList.length; i++){
+        this.combo=""
+        this.idList=[]
+        this.payMoney=0
+        this.numList=[]
+        for(var j=0; j<this.groupList[i].product_info.length; j++){
+          this.combo=this.combo+this.groupList[i].product_info[j].store_name+'+'
+          this.idList.push(this.groupList[i].product_info[j].product_id)
+          this.numList.push(this.groupList[i].product_info[j].number)
+          this.payMoney=this.payMoney+parseInt(this.groupList[i].product_info[j].price)*this.groupList[i].product_info[j].number
+        }
+        console.log(this.numList);
+        
+        this.groupList[i].idList=this.idList
+        this.groupList[i].payMoney=this.payMoney
+        this.groupList[i].combo=this.combo.substring(0,this.combo.length-1)
+        this.groupList[i].numList=this.numList
+        
+        
+        
+      }
+      console.log(this.groupList);
+      
+    })
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.g-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  .title {
+    font-size: 40px;
+  }
+  .s-title {
+    color: #888888;
+    margin-top: 14px;
+    margin-bottom: 60px;
+  }
+  .g-item {
+    width: 100%;
+    height: 740px;
+    background-color: #fff;
+    padding: 30px;
+    padding-top: 70px;
+    box-sizing: border-box;
+    @include flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    .left {
+      @include flex(column);
+      .l-img {
+        margin-bottom: 30px;
+        @include flex;
+        img {
+          max-width: 487px;
+          height: auto;
+          object-fit: cover;
+        }
+      }
+    }
+    .right {
+      .r-title {
+        font-size: 30px;
+      }
+      .r-s-title {
+        color: #888888;
+        font-size: 20px;
+        margin-top: 20px;
+        width: 546px;
+        max-height: 80px;
+        overflow: hidden;
+      }
+      .price {
+        font-size: 24px;
+        margin-top: 40px;
+      }
+      .tip {
+        margin-top: 36px;
+        span {
+          color: #ff2e7a;
+        }
+      }
+      .box {
+        width: 546px;
+        border: 1px solid rgba(210, 210, 210, 0.5);
+        margin-top: 60px;
+        padding: 34px 30px 16px 30px;
+        box-sizing: border-box;
+        @include flex;
+        justify-content: space-between;
+        position: relative;
+        .btn {
+          position: absolute;
+          width: 150px;
+          height: 50px;
+          left: 50%;
+          margin-left: -75px;
+          top: -25px;
+          @include flex;
+          color: #fff;
+          background-color: #215b45;
+          border-radius: 25px;
+          cursor: pointer;
+          img {
+            width: 14px;
+            margin-right: 8px;
+          }
+        }
+        .b-item {
+          height: 100%;
+          @include flex(column);
+          justify-content: space-between;
+          img {
+            width: 180px;
+            height: auto;
+            object-fit: cover;
+            margin-bottom: 10px;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .g-content {
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+    .title {
+      font-size: px(46);
+    }
+    .s-title {
+      color: #888888;
+      margin-top: px(17);
+      margin-bottom: px(28);
+      font-size: px(20);
+    }
+    .g-item {
+      width: 100%;
+      height: 100%;
+      background-color: #fff;
+      padding: px(68) px(22) px(32) px(22);
+      box-sizing: border-box;
+      @include flex(column);
+      .l-img {
+        @include flex;
+        margin-top: px(30);
+        img {
+          max-width: px(547);
+          max-height: px(487);
+          object-fit: cover;
+        }
+      }
+      .l-price {
+        margin-top: 30px;
+        font-weight: bold;
+      }
+      .r-title {
+        font-size: px(36);
+      }
+      .r-s-title {
+        color: #888888;
+        font-size: px(26);
+        margin-top: px(20);
+      }
+      .price {
+        font-size: px(36);
+        margin-top: px(48);
+      }
+      .tip {
+        margin-top: px(20);
+        font-size: px(20);
+        span {
+          color: #ff2e7a;
+        }
+      }
+      .box {
+        width: px(650);
+        border: 1px solid rgba(210, 210, 210, 0.5);
+        margin-top: px(34);
+        padding: px(30) px(30) px(16) px(30);
+        box-sizing: border-box;
+        @include flex;
+        justify-content: space-between;
+        position: relative;
+        .btn {
+          position: absolute;
+          width: px(155);
+          height: px(52);
+          left: 50%;
+          margin-left: px(-76);
+          bottom: px(-26);
+          @include flex;
+          color: #fff;
+          background-color: #215b45;
+          border-radius: px(26);
+          cursor: pointer;
+          font-size: px(20);
+          img {
+            width: px(14);
+            height: auto;
+            margin-right: px(8);
+          }
+        }
+        .b-item {
+          height: 100%;
+          @include flex(column);
+          justify-content: space-between;
+          font-size: px(24);
+          font-weight: bold;
+          img {
+            width: px(215);
+            height: auto;
+            object-fit: cover;
+            margin-bottom: 10px;
+          }
+        }
+      }
+    }
+  }
+}
+</style>

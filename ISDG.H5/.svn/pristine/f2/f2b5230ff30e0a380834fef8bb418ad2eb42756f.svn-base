@@ -1,0 +1,460 @@
+<template>
+  <div class="navbar">
+    <div class="sec0 hidden-xs-only">
+      <div class="content">
+        <div class="content_inner1">
+          <div class="left">
+            <img src="@/static/icon/icon12.png" />
+            <div class="left_text">通知公告</div>
+          </div>
+          <div class="middle">
+            <div>热烈庆祝iSDG境外代购平台正式上线啦!</div>
+            <div class="time">2020-03-20</div>
+          </div>
+        </div>
+        <div class="bottom">
+          <i class="el-icon-close"></i>
+        </div>
+      </div>
+    </div>
+    <div class="sec1">
+      <div class="content">
+        <div class="left">
+          <div class="inner">
+            <img src="@/static/icon/icon1.png" alt="" />
+            <div>日本官网</div>
+          </div>
+          <div class="inner">
+            <img src="@/static/icon/icon11.png" alt="" />
+            <div>美妆官网</div>
+          </div>
+        </div>
+        <div class="right">
+          <el-popover
+            placement="bottom"
+            width="300"
+            trigger="hover"
+            class="hidden-xs-only"
+          >
+            <login type="popover" />
+            <el-button v-show="isLogin" slot="reference" class="inner"
+              >
+              <!-- <img src="@/static/icon/icon2.png" alt="" /> -->
+              <div>
+                <span @click="jump(0, '/login')">登录</span>
+                <span>|</span>
+                <span @click="jump(0, '/register')">注册</span>
+              </div>
+            </el-button>
+          </el-popover>
+          <div class="inner hidden-sm-and-up">
+            <img src="@/static/icon/icon2.png" alt="" />
+          </div>
+          <div class="inner" v-show="!isLogin">
+            <img src="@/static/icon/icon2.png" alt="" />
+            <div @click="jump(-1, '/personal')">我的账号</div>
+          </div>
+          <div class="inner">
+            <img src="@/static/icon/icon3.png" alt="" />
+            <div class="hidden-xs-only">消息</div>
+          </div>
+          <div class="inner" @click="jump(-1, '/car')">
+            <img src="@/static/icon/icon4.png" alt="" />
+            <div class="hidden-xs-only">购物车</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="sec2">
+      <div class="content">
+        <div class="logo" @click="jump(0, '/')">
+          <img src="@/static/icon/logo.png" />
+        </div>
+        <div
+          class="menu hidden-sm-and-up"
+          @click="dialogVisible = !dialogVisible"
+        >
+          <img src="@/static/icon/icon18.png" v-if="!dialogVisible" />
+          <i class="el-icon-close" v-else></i>
+        </div>
+        <div class="menuList hidden-xs-only">
+          <div
+            class="item"
+            v-for="(item, index) in menu"
+            :key="index"
+            @click="jump(index, item.path)"
+            :class="{ active: active === index }"
+          >
+            {{ item.name }}
+          </div>
+        </div>
+        <div class="search">
+          <div class="input">
+            <input type="text" placeholder="请输入内容" v-model="text" />
+          </div>
+          <div class="btn" @click="search">
+            <img src="@/static/icon/icon10.png" alt="" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <transition name="el-fade-in">
+      <div class="dialog hidden-sm-and-up" v-show="dialogVisible">
+        <div class="content">
+          <div
+            class="item"
+            v-for="(item, index) in menu"
+            :key="index"
+            @click="jump(index, item.path)"
+          >
+            <div>{{ item.name }}</div>
+            <i class="el-icon-arrow-right"></i>
+          </div>
+        </div>
+      </div>
+    </transition>
+  </div>
+</template>
+
+<script>
+import login from "@/pages/login";
+export default {
+  components: {
+    login
+  },
+  data() {
+    return {
+      dialogVisible: false,
+      loginbtn:true,
+      loginsuccess:false,
+      menu: [
+        {
+          path: "/",
+          name: "首页"
+        },
+        {
+          path: "/goods",
+          name: "全线商品"
+        },
+        {
+          path: "/points_market",
+          name: "积分兑换"
+        },
+        {
+          path:"/news",
+          name:"健康中心"
+        },
+        {
+          path: "/story",
+          name: "品牌故事"
+        },
+        {
+          path: "/news",
+          name: "品牌咨询"
+        },
+
+        {
+          path: "/contactus",
+          name: "联系我们"
+        },
+        // {
+        //   path: "/coupon",
+        //   name: "优惠活动"
+        // }
+      ],
+      active: 0,
+      text: "",
+      isLogin:true
+    };
+  },
+  computed: {
+    listData() {
+      return this.$store.state.isLogin;
+    }
+  },
+  //监听执行
+  watch: {
+    listData(val) {
+    //  写上你需要的东西
+    console.log('执行了');
+    this.isLogin=this.$store.state.isLogin;
+    console.log(this.$store.state.isLogin)
+    }
+  },
+  mounted(){
+    console.log(this.$store.state.isLogin)
+    this.isLogin=this.$store.state.isLogin
+  },
+  methods: {
+    jump(index, path) {
+      this.active = index;
+      this.$router.push(path);
+    },
+    search() {
+      this.$router.push({
+        path: "/search",
+        query: {
+          keyword: this.text
+        }
+      });
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.sec1 {
+  width: 100%;
+  background: linear-gradient(90deg, rgba(41, 98, 86, 1), rgba(15, 47, 42, 1));
+  color: #fff;
+  font-size: px(18);
+  .content {
+    width: 100%;
+    margin: 0 auto;
+    padding: px(18) px(26) px(18) px(20);
+    box-sizing: border-box;
+    @include flex;
+    justify-content: space-between;
+    .left {
+      @include flex;
+      .inner {
+        cursor: pointer;
+        @include flex;
+        img {
+          width: px(22);
+          height: px(22);
+          margin-right: px(10);
+        }
+        &:first-child {
+          margin-right: px(30);
+        }
+      }
+    }
+    .right {
+      @include flex;
+      .inner {
+        cursor: pointer;
+        @include flex;
+        img {
+          height: px(30);
+          width: auto;
+          object-fit: cover;
+        }
+        &:not(:last-child) {
+          margin-right: px(34);
+        }
+      }
+    }
+  }
+}
+.sec2 {
+  width: 100%;
+  background-color: #fff;
+
+  .content {
+    width: 100%;
+    margin: 0 auto;
+    padding: px(15) px(15) px(30) px(15);
+    box-sizing: border-box;
+    @include flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    .logo {
+      width: 50%;
+      img {
+        width: px(168);
+        height: px(75);
+      }
+    }
+    .menu {
+      width: 50%;
+      text-align: right;
+      img {
+        height: px(30);
+        width: px(40);
+      }
+      i {
+        font-size: px(50);
+      }
+    }
+    .search {
+      font-size: px(20);
+      @include flex;
+      margin: 0 auto;
+      margin-top: 20px;
+      .input {
+        width: px(600);
+        height: px(70);
+        border: 1px solid #e5e5e5;
+        background: #fff;
+        padding: 0 px(20);
+        box-sizing: border-box;
+        border-radius: px(35) 0 0 px(35);
+        overflow: hidden;
+        input {
+          width: 100%;
+          height: 100%;
+        }
+      }
+      .btn {
+        cursor: pointer;
+        width: px(100);
+        height: px(70);
+        background-color: #225c45;
+        @include flex;
+        border-radius: 0 px(35) px(35) 0;
+        img {
+          width: px(41);
+          height: px(41);
+        }
+      }
+    }
+  }
+}
+.dialog {
+  width: 100%;
+  position: absolute;
+  left: 0;
+  top: px(160);
+  z-index: 9999;
+  .content {
+    padding: px(20) px(50) px(100) px(50);
+    background-color: #225c46;
+    .item {
+      @include flex;
+      justify-content: space-between;
+      color: #fff;
+      height: px(108);
+      font-size: px(36);
+      border-bottom: 1px solid #2b6a52;
+    }
+  }
+}
+
+@media screen and (min-width: 768px) {
+  .sec1 {
+    font-size: 14px;
+    .content {
+      max-width: 1200px;
+      padding: 14px 10px 14px 10px;
+      .left {
+        .inner {
+          img {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+          }
+          &:first-child {
+            margin-right: 20px;
+          }
+        }
+      }
+      .right {
+        .inner {
+          img {
+            height: 15px;
+            margin-right: 12px;
+          }
+          &:not(:last-child) {
+            margin-right: 30px;
+          }
+        }
+        /deep/.el-button {
+          background-color: transparent;
+          border: 0;
+          color: #fff;
+          > span {
+            @include flex;
+          }
+        }
+      }
+    }
+  }
+  .sec2 {
+    width: 100%;
+    background-color: #fff;
+    .content {
+      max-width: 1200px;
+      padding: 0 10px;
+      .logo {
+        width: auto;
+        margin-bottom: 10px;
+        img {
+          width: 168px;
+          height: 75px;
+        }
+      }
+      .menuList {
+        @include flex;
+        margin: 0 auto;
+        margin-bottom: 10px;
+        div {
+          cursor: pointer;
+          padding: 9px 20px;
+          border-radius: 17px;
+        }
+        .active {
+          background-color: #225c45;
+          color: #fff;
+        }
+      }
+      .search {
+        font-size: 14px;
+        margin: 0 auto;
+        margin-bottom: 10px;
+        .input {
+          width: 166px;
+          height: 40px;
+          padding: 0 14px;
+          border-radius: 20px 0 0 20px;
+        }
+        .btn {
+          width: 54px;
+          height: 40px;
+          img {
+            width: 20px;
+            height: 20px;
+          }
+        }
+      }
+    }
+  }
+  .sec0 {
+    width: 100%;
+    height: 35px;
+    line-height: 35px;
+    background: #80c4b1;
+    color: #fff;
+    .content {
+      @include flex;
+      max-width: 1200px;
+      margin: 0 auto;
+      justify-content: space-between;
+      box-sizing: border-box;
+      padding: 0 10px;
+      .content_inner1 {
+        @include flex;
+        justify-content: flex-start;
+        .left {
+          @include flex;
+          .left_text {
+            margin-left: 12px;
+          }
+        }
+        .middle {
+          @include flex;
+          margin-left: 28px;
+          .time {
+            margin-left: 100px;
+          }
+        }
+      }
+
+      .bottom {
+        @include flex;
+        cursor: pointer;
+      }
+    }
+  }
+}
+</style>

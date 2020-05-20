@@ -1,0 +1,162 @@
+<template>
+  <div class="detail">
+    <div class="content">
+      <goods-detail :isFalsh="true" btnText="立即购买" @jump="jump" />
+      <div class="about hidden-xs-only">
+        <div class="title">推荐产品</div>
+        <div class="stitle">
+          Recommended Products
+          <div class="line"></div>
+        </div>
+        <div v-swiper:swiper="swiperOption" class="swiper-option">
+          <div class="swiper-wrapper">
+            <div
+              class="item swiper-slide"
+              v-for="(item, index) in 11"
+              :key="index"
+            >
+              <div class="img">
+                <img src="@/static/demo/demo1.png" alt="" />
+              </div>
+              <div class="s-title">
+                ISDG日本进口夜间 DIET 黄金232种果蔬酵素孝酵素 120粒/袋*3 拷贝
+              </div>
+              <div class="price">
+                ￥880
+              </div>
+            </div>
+          </div>
+          <div
+            class="swiper-button-next swiper-button-white"
+            slot="button-next"
+          ></div>
+          <div
+            class="swiper-button-prev swiper-button-white"
+            slot="button-prev"
+          ></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import goodsDetail from "@/components/goodsDetail";
+import api from "@/plugins/api/api";
+export default {
+  components: {
+    goodsDetail
+  },
+  data() {
+    return {
+      swiperOption: {
+        slidesPerView: "auto",
+        spaceBetween: 50,
+        navigation: {
+          nextEl: ".swiper-button-next",
+          prevEl: ".swiper-button-prev"
+        }
+      }
+    };
+  },
+  methods: {
+    jump() {
+      this.$router.push('/order')
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.detail {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f7f4f8;
+}
+.content {
+  padding: 50px 0 100px 0;
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin: 0 auto;
+  .about {
+    width: 100%;
+    text-align: center;
+    .title {
+      font-size: 30px;
+      color: #003333;
+    }
+    .stitle {
+      color: #5dd2b1;
+      font-size: 14px;
+      padding-bottom: 24px;
+      margin-top: 10px;
+      border-bottom: 1px solid #dcdcdc;
+      position: relative;
+      .line {
+        position: absolute;
+        width: 77px;
+        height: 3px;
+        background: rgba(93, 210, 177, 1);
+        border-radius: 1px;
+        left: 50%;
+        margin-left: -38px;
+        bottom: -2px;
+      }
+    }
+    .swiper-option {
+      margin-top: 64px;
+      width: 100%;
+      .swiper-button-prev {
+        background-size: 15px 26px;
+        margin-top: -80px !important;
+        background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAaCAYAAABozQZiAAAAv0lEQVQ4jZ3U2w2CQBBA0Qsd0IItzJQgLViClqAlaAnWoiWstVDC+CEQCfuYXRJ+SM6FhJ3BzKi5ReQgIkczozMzvJeqCvACBuDWN8IJeLtwBI4hhE8RpyBAFudgFpdgEntgFHvhDtfADa6FK26BAJ2INMHlzdcZAjy8cMEXYAF3VT27cQhhAsa/wNMb6AFaA+uvaglsDkltYHc8awLRwfAGkiPpCWSXQSlQXEO5gHv1qurAbwZkfnRyr97IF/AFmuizR23zqccAAAAASUVORK5CYII=");
+      }
+      .swiper-button-next {
+        background-size: 15px 26px;
+        margin-top: -80px !important;
+        background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA8AAAAaCAYAAABozQZiAAAAv0lEQVQ4jZ3S4Q2CQAxA4Uc3YAVXaEeQEVzBFZhFR9ARWOGYhRHqD9EIAnc9EhJK8r1eCLg7qnpW1ZO7E7nFzHpgAJKZKYFLgDswAi0wRAKSUpqAriYgALUB+TzUBOR3iAZk/SIS+MORwCYuDeziksAhzgUad895AMys5f0bKzABXXbz6gTPeWyBPrL5CtzmcSzevAVTSlMW70HIfO0jeIhzcBeXwE1cCv9wBC5wFH5xDQRoVPUCPKJwcewoBHgBxw21aqqpeVcAAAAASUVORK5CYII=");
+      }
+      .item {
+        width: 338px;
+        height: 100%;
+        margin-bottom: 24px;
+        .img {
+          width: 100%;
+          height: 338px;
+          @include flex;
+          background-color: #fff;
+          position: relative;
+          img {
+            width: auto;
+            max-height: 338px;
+            object-fit: cover;
+          }
+        }
+        .s-title {
+          height: 48px;
+          line-height: 24px;
+          text-align: center;
+          width: 100%;
+          margin-top: 34px;
+          @include ellipsis(2);
+        }
+        .price {
+          margin-top: 20px;
+          width: 100%;
+          text-align: center;
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .content {
+    padding: 0 0 px(90) 0;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0 auto;
+  }
+}
+</style>

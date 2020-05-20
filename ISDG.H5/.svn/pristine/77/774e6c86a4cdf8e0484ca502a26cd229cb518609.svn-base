@@ -1,0 +1,49 @@
+<template>
+  <div class="password">
+    
+    <banner />
+    <my-form
+      :status="2"
+      :placeholder="placeholder"
+      title="修改邮箱"
+      @submit="submit"
+    />
+    
+  </div>
+</template>
+
+<script>
+
+import banner from "@/components/common/banner";
+
+import myForm from "@/components/form";
+export default {
+  components: {
+    banner,
+    myForm,
+  },
+  data() {
+    return {
+      placeholder: {
+        p6: "请输入新绑定邮箱",
+        p2: "请输入邮箱验证码",
+        p3: "发送验证码",
+        p4: "确认"
+      }
+    };
+  },
+  methods: {
+    submit(form) {
+      console.log(form);
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.password {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f3f0f3;
+}
+</style>

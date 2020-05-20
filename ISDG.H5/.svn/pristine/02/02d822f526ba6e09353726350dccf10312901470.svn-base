@@ -1,0 +1,719 @@
+<template>
+  <div class="car">
+    <div class="content">
+      <div class="mtitle">
+        <img src="@/static/icon/car.png" alt="" />
+        <div>购物车</div>
+      </div>
+      <div class="chose">
+        <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+      </div>
+      <div class="main">
+      <div class="car-inner">
+          
+          <div class="car-item" v-for="(item,index) in carList" :key="index">
+            <el-checkbox-group v-model="checkedCities" @change="handleCheckedCitiesChange">
+              <el-checkbox :label="index">&nbsp;</el-checkbox>
+            </el-checkbox-group>
+            <div class="car-content">
+              <div class="m-top">
+                <img :src="item.productInfo.image" alt="" />
+                <div class="name">
+                  <div class="name-inner1">
+                    {{item.productInfo.store_name}}
+                  </div>
+                  <div class="name-inner2">
+                    <div>规格：{{item.productInfo.unit_name}}</div>
+                  </div>
+                </div>
+                <!-- 
+                pc 按钮组 价格
+               -->
+                <div class="btns hidden-xs-only">
+                   <el-input-number v-model="item.cart_num" @change="handleChange(index)" :min="1" :max="10" label="描述文字"></el-input-number>
+                </div>
+                <div class="price hidden-xs-only">
+                  <div>￥{{item.cart_num*item.productInfo.price}}</div>
+                </div>
+              </div>
+              <!-- 
+                h5 按钮组 价格
+               -->
+              <div class="hidden-sm-and-up xs-inner">
+                <div class="btns">
+                  <el-input-number v-model="item.cart_num" @change="handleChange(index)" :min="1" :max="10" label="描述文字"></el-input-number>
+                </div>
+                <div class="xs-inner2">
+                  <div>￥{{item.cart_num*item.productInfo.price}}</div>
+                </div>
+              </div>
+              <div class="m-bottom">
+                <div v-if="!item.productInfo.is_postage">免运费</div>
+                <div>
+                  <img src="@/static/icon/liked.png" alt="" v-if="!like && id==item.id" @click="likeAdd(item.id)"/>
+                  <img src="@/static/icon/like.png" alt="" v-else @click="likeAdd(item.id)"/>
+                  <div>收藏</div>
+                </div>
+                <div @click="carDel(item.id)">
+                  <img src="@/static/icon/del.png" alt="" />
+                  <div>移除</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="info">
+          <div class="goods">
+            <div class="title">
+              <div>订单小计</div>
+              <div>已选择{{carNumber}}件商品</div>
+            </div>
+            <div class="goods-price">
+              <div class="price-inner">
+                <div>商品总计</div>
+                <div>￥{{payPrice}}</div>
+              </div>
+            </div>
+            <div class="goods-tip">
+              <div>说明</div>
+              <div class="text">
+                订单提交之后 1 小时内未付款，订单将被系
+                统自动取消，请您尽快完成支付以确保商品
+                能及时送达，国外商品和国内商品是分开寄 出
+              </div>
+            </div>
+            <div class="goods-btn" @click="goOrder">前往结算</div>
+            <div class="goods-btn2" @click="getNum">继续购物</div>
+          </div>
+          <div class="help">
+            <div class="title">需要帮助？</div>
+            <div class="item">
+              <div class="">支付方式</div>
+              <i class="el-icon-plus"></i>
+              <!-- 收起 -->
+              <i class="el-icon-minus" v-if="false"></i>
+              <!-- 展开 -->
+              <!-- 设计图暂时未看到样式 -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import api from "@/plugins/api/api";
+export default {
+  data(){
+    return{
+      carList:[],
+      list:[],
+      num:1,
+      checked:false,
+      id:"",
+      like:false,
+      checkAll: false,
+      checkedCities: [],
+      isIndeterminate: false,
+      multipleSelection: [],
+      checkedGameId: [],
+      carNumber:0,
+      price:0,
+      payPrice:0,
+      postage:0,
+      grade:false,
+      idList:[],
+      numList:[]
+    }
+  },
+  methods:{
+    handleChange(index){
+      this.num=this.carList[index].cart_num
+      api.personal.editCar({id:this.carList[index].id,number:this.num}).then((res)=>{
+
+      })
+      
+      
+    },
+    likeAdd(id){
+      this.like=!this.like
+      this.id=id
+      if(this.like==true){
+        api.personal.collectAdd({id:id})
+      }
+    },
+    carDel(id){
+      api.personal.delCar({ids:id}).then((res)=>{
+        if(res.status==200){
+           this.$message({
+              message: "删除成功",
+              type: 'success'
+            });
+            api.personal.shoppingCar().then((res)=>{
+              this.carList=res.data.valid
+            })
+        }
+      })
+    },
+    handleCheckAllChange(val) {
+            this.numList=[]
+            this.idList=[]
+            this.checkedCities = val ? this.checkedGameId : []
+            this.isIndeterminate = false
+            // console.log(this.multipleSelection,val);
+            if(val==true){
+              this.carNumber=this.checkedGameId.length
+              for(var i=0; i<this.checkedGameId.length; i++){
+                this.price=this.price+parseInt(this.carList[this.checkedGameId[i]].productInfo.price)*this.carList[this.checkedGameId[i]].cart_num
+                this.postage=this.postage+parseInt(this.carList[this.checkedGameId[i]].productInfo.postage)
+                this.idList.push(this.carList[i].productInfo.id)
+                this.numList.push(this.carList[i].cart_num)
+              }
+              // console.log(this.idList);
+              
+            this.payPrice=this.price-this.postage
+
+            }else{
+              this.carNumber=0
+              this.price=0
+              this.postage=0
+              this.payPrice=0
+            }
+        },
+        handleCheckedCitiesChange(value) {
+            this.idList=[]
+            this.numList=[]
+            let checkedCount = value.length
+            this.checkAll = checkedCount === this.checkedGameId.length
+            this.isIndeterminate = checkedCount > 0 && checkedCount < this.checkedGameId.length
+            console.log(value);
+            this.carNumber=value.length
+            this.price=0
+            this.postage=0
+            for(var i=0; i<value.length; i++){
+              this.price=this.price+parseInt(this.carList[value[i]].productInfo.price)*this.carList[value[i]].cart_num
+              this.postage=this.postage+parseInt(this.carList[value[i]].productInfo.postage)
+              this.idList.push(this.carList[value[i]].productInfo.id)
+              this.numList.push(this.carList[value[i]].cart_num)
+            }
+            console.log(this.idList)
+            this.payPrice=this.price-this.postage
+
+        },
+        useGrade(){
+          this.grade=!this.grade
+          if(this.grade==true&&this.payPrice>0){
+            this.payPrice=this.payPrice-23
+          }else if(this.grade==false&&this.payPrice>0){
+            this.payPrice=this.payPrice+23
+          }
+        },
+        goOrder(){
+          if(this.idList.length>0){
+           this.$router.push({path:"/order", query: {id:this.idList,comNum:this.idList.length,numList:this.numList}});
+          }else{
+            this.$message({
+              message:"请选择要购买的商品",
+              type:"warning"
+            })
+          }
+        },
+        getNum(){
+           this.$router.push({path:"/goods"});
+        }
+        
+  },
+  mounted(){
+    api.personal.shoppingCar().then((res)=>{
+      this.carList=res.data.valid
+      for (let i = 0; i < this.carList.length; i++) {
+            this.checkedGameId.push(i)
+            // console.log(this.checkedGameId);
+            this.multipleSelection = this.checkedGameId
+            
+        }
+    })
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.car {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f7f4f8;
+}
+.checkbox {
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(201, 201, 201, 1);
+  cursor: pointer;
+  transition: all 0.2s linear;
+  &:hover {
+    border-color: #225c45;
+  }
+  &:focus {
+    border-color: #225c45;
+  }
+}
+/deep/.el-dropdown-menu__item {
+  &:hover {
+    background: #fff;
+    color: #5dd2b1;
+  }
+}
+.content {
+  padding: 50px 10px 114px 10px;
+  box-sizing: border-box;
+  max-width: 1200px;
+  margin: 0 auto;
+  text-align: center;
+  .mtitle {
+    @include flex;
+    font-size: 20px;
+    img {
+      margin-right: 13px;
+    }
+  }
+  .chose {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 24px;
+    @include flex;
+    justify-content: flex-start;
+    .checkbox {
+      margin-right: 17px;
+    }
+  }
+  .main {
+    @include flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .car-inner {
+    width: 800px;
+    .car-item {
+      width: 100%;
+      padding: 20px 0;
+      border-top: 1px solid #dcdcdc;
+      border-bottom: 1px solid #dcdcdc;
+      @include flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      &:last-child {
+        margin-bottom: 100px;
+      }
+      .checkbox {
+        margin-right: 30px;
+      }
+      .m-top {
+        @include flex;
+        align-items: flex-start;
+        img {
+          width: 100px;
+          height: 100px;
+          object-fit: cover;
+        }
+        .name {
+          height: 100px;
+          margin-left: 17px;
+          width: 327px;
+          text-align: left;
+          .name-inner1 {
+            height: 34px;
+            line-height: 17px;
+            @include ellipsis(2);
+          }
+          .name-inner2 {
+            color: #888888;
+            margin-top: 17px;
+          }
+        }
+        .btns {
+          margin-left: 40px;
+          .number {
+            height: 40px;
+            @include flex;
+            justify-content: flex-start;
+            div:first-child {
+              height: 40px;
+              width: 40px;
+              background-color: #fff;
+              @include flex;
+              color: #666666;
+              font-size: 14px;
+              cursor: pointer;
+            }
+            div:last-child {
+              @extend div:first-child;
+            }
+            div:nth-child(2) {
+              height: 100%;
+              width: 85px;
+              margin: 0 8px;
+              background-color: #fff;
+              color: #666666;
+              font-size: 14px;
+              input {
+                width: 100%;
+                height: 100%;
+                padding: 0 10px;
+                box-sizing: border-box;
+              }
+            }
+          }
+        }
+        .price {
+          margin-left: 40px;
+          font-weight: bold;
+          margin-top: 8px;
+        }
+      }
+      .m-bottom {
+        margin-top: 30px;
+        width: 100%;
+        @include flex;
+        justify-content: flex-start;
+        div {
+          @include flex;
+          margin-right: 40px;
+          cursor: pointer;
+          img {
+            margin-right: 4px;
+          }
+        }
+      }
+    }
+  }
+  .info {
+    width: 325px;
+    margin: 0 auto;
+    // position: absolute;
+    // left: 1200px;
+    // top: 230px;
+    .goods {
+      width: 100%;
+      padding: 30px;
+      box-sizing: border-box;
+      background-color: #fff;
+      .title {
+        width: 100%;
+        @include flex;
+        justify-content: space-between;
+        padding-bottom: 30px;
+        border-bottom: 1px solid #eeeeee;
+        span {
+          color: #fe2e7a;
+        }
+      }
+      .goods-price {
+        padding: 23px 0;
+        border-bottom: 1px solid #eee;
+        .price-inner {
+          @include flex;
+          justify-content: space-between;
+          margin-bottom: 20px;
+          &:last-child {
+            font-weight: bold;
+            margin-bottom: 0;
+          }
+         
+        }
+        .price-etc {
+          justify-content: flex-start;
+          margin-top: 5px;
+          margin-bottom: 15px;
+           /deep/.el-checkbox__input.is-checked+.el-checkbox__label{
+            color: #333;
+          }
+          .checkbox {
+            margin-right: 10px;
+          }
+        }
+      }
+      .goods-tip {
+        padding-top: 10px;
+        padding-bottom: 24px;
+        .text {
+          color: #888;
+          margin-top: 15px;
+          line-height: calc(100% + 7px);
+        }
+      }
+      .goods-btn {
+        width: 277px;
+        height: 45px;
+        background-color: #225c45;
+        @include flex;
+        color: #fff;
+        cursor: pointer;
+        border: 1px solid #225c45;
+      }
+      .goods-btn2 {
+        @extend .goods-btn;
+        margin-top: 15px;
+        background-color: #fff;
+        color: #000000;
+        border-color: #000000;
+      }
+    }
+    .help {
+      width: 100%;
+      height: 100%;
+      padding: 30px 20px;
+      box-sizing: border-box;
+      background-color: #fff;
+      margin-top: 27px;
+      .title {
+        font-weight: bold;
+        padding-bottom: 14px;
+        border-bottom: 1px solid #eeeeee;
+      }
+      .item {
+        padding: 20px 0;
+        @include flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #eeeeee;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  /deep/.el-dropdown {
+    font-size: px(24) !important;
+    .el-dropdown-menu__item {
+      font-size: px(24) !important;
+    }
+  }
+  .checkbox {
+    width: px(30);
+    height: px(30);
+    border: 1px solid rgba(201, 201, 201, 1);
+    cursor: pointer;
+    transition: all 0.2s linear;
+    &:hover {
+      border-color: #225c45;
+    }
+    &:focus {
+      border-color: #225c45;
+    }
+  }
+  .content {
+    padding: px(50) 10px px(100) 10px;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0 auto;
+    text-align: center;
+    .mtitle {
+      @include flex;
+      font-size: px(28);
+      img {
+        margin-right: px(13);
+        width: px(38);
+        height: px(35);
+      }
+    }
+    .chose {
+      width: 100%;
+      text-align: left;
+      margin-bottom: px(32);
+      margin-top: px(50);
+    }
+    .car-inner {
+      width: 800px;
+      margin: 0 auto;
+      .car-item {
+        width: 100%;
+        padding: px(20) 0;
+        border-top: 1px solid #dcdcdc;
+        border-bottom: 1px solid #dcdcdc;
+        &:last-child {
+          margin-bottom: px(170);
+        }
+        .checkbox {
+          margin-right: px(30);
+        }
+        .car-content {
+          width: calc(100vw - 20px - 30px - 15px);
+        }
+        .m-top {
+          @include flex;
+          align-items: flex-start;
+          width: 100%;
+          img {
+            width: px(130);
+            height: px(130);
+            object-fit: cover;
+          }
+          .name {
+            height: px(130);
+            margin-left: px(18);
+            text-align: left;
+            width: 100% !important;
+            .name-inner1 {
+              height: px(48);
+              line-height: px(24);
+              @include ellipsis(2);
+              font-size: px(24);
+            }
+            .name-inner2 {
+              color: #888888;
+              margin-top: px(25);
+              font-size: px(20);
+            }
+          }
+        }
+        .xs-inner {
+          @include flex;
+          margin-top: px(39);
+          width: 100%;
+          justify-content: space-between;
+          .btns {
+            margin-left: 0;
+            .number {
+              height: px(50);
+              @include flex;
+              justify-content: flex-start;
+              div:first-child {
+                height: px(50);
+                width: px(50);
+                background-color: #fff;
+                @include flex;
+                color: #666666;
+                font-size: px(24);
+                cursor: pointer;
+              }
+              div:nth-child(2) {
+                height: 100%;
+                width: px(106);
+                margin: 0 px(12);
+                background-color: #fff;
+                color: #666666;
+                font-size: px(24);
+                input {
+                  width: 100%;
+                  height: 100%;
+                  padding: 0 px(16);
+                  box-sizing: border-box;
+                }
+              }
+              div:last-child {
+                height: px(50);
+                width: px(50);
+                background-color: #fff;
+                @include flex;
+                color: #666666;
+                font-size: px(24);
+                cursor: pointer;
+              }
+            }
+          }
+          .price {
+            margin-left: 40px;
+            font-weight: bold;
+            margin-top: 8px;
+          }
+        }
+        .m-bottom {
+          margin-top: px(42);
+          width: 100%;
+          @include flex;
+          justify-content: flex-start;
+          font-size: px(20);
+          div {
+            @include flex;
+            margin-right: px(40);
+            cursor: pointer;
+            img {
+              margin-right: px(8);
+              width: px(26);
+              height: auto;
+              object-fit: cover;
+            }
+          }
+        }
+      }
+    }
+  }
+  .info {
+    width: 100% !important;
+    margin: 0 auto;
+    .goods {
+      width: 100%;
+      padding: px(30);
+      box-sizing: border-box;
+      background-color: #fff;
+      font-size: px(22);
+      .title {
+        width: 100%;
+        margin-bottom: 12px;
+        span {
+          color: #fe2e7a;
+        }
+      }
+      .goods-price {
+        padding: px(40) 0;
+        border-bottom: 1px solid #eee;
+        font-size: px(24);
+        .price-inner {
+          @include flex;
+          justify-content: space-between;
+          margin-bottom: 20px;
+          &:last-child {
+            font-weight: bold;
+            margin-bottom: 0;
+          }
+        }
+      }
+      .goods-tip {
+        padding-top: 10px;
+        padding-bottom: 24px;
+        .text {
+          color: #888;
+          margin-top: 15px;
+          line-height: calc(100% + 7px);
+        }
+      }
+      .goods-btn {
+        width: px(437) !important;
+        height: px(70) !important;
+        background-color: #225c45;
+        @include flex;
+        color: #fff;
+        font-size: px(30);
+        margin: 0 auto;
+      }
+      .goods-btn2 {
+        width: px(437) !important;
+        height: px(70) !important;
+        margin-top: px(30) !important;
+      }
+    }
+    .help {
+      width: 100%;
+      height: 100%;
+      padding: px(36);
+      box-sizing: border-box;
+      background-color: #fff;
+      margin-top: px(43);
+      .title {
+        font-size: px(30);
+        font-weight: bold;
+        padding-bottom: px(20);
+        border-bottom: 1px solid #eeeeee;
+      }
+      .item {
+        font-size: px(24);
+        padding: px(30) 0;
+        @include flex;
+        justify-content: space-between;
+        border-bottom: 1px solid #eeeeee;
+      }
+    }
+  }
+}
+</style>

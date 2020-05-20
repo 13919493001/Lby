@@ -1,0 +1,266 @@
+<template>
+  <div class="market">
+    <div class="banner">
+      <img src="@/static/icon/market01.png" alt="" />
+    </div>
+    <div class="content">
+      <div class="item">
+        <div class="title">超值好物等你来换</div>
+        <div class="goods">
+          <div class="g-item" v-for="(item, index) in comList" :key="index">
+            <div @click="goDetail(index)">
+              <img :src="item.image" alt="" class="g-img" />
+              <div class="g-title">
+                {{item.store_name}}
+              </div>
+              <div class="g-price">
+                <div>{{item.integral}}积分</div>
+                <div>+</div>
+                <div>￥{{item.price}}</div>
+              </div>
+            </div>
+            <div class="g-btn" @click="exchange(index)">
+              <img src="@/static/icon/icon5.png" alt="" />
+              <div>立即兑换</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="total"
+        :page-size="8"
+        @prev-click="last"
+        @next-click="next"
+        @current-change="currentChange"
+        prev-text="上一页"
+        next-text="下一页"
+        :hide-on-single-page="true"
+        :current-page="page"
+      >
+      </el-pagination>
+    </div>
+  </div>
+</template>
+
+<script>
+import api from "@/plugins/api/api";
+export default {
+  data(){
+    return{
+      comList:[],
+      id:[],
+      total:0,
+      page:1
+    }
+  },
+  methods:{
+    goDetail(index){
+      this.$store.state.points=this.comList[index].integral
+      this.$router.push({path:'points_market/detail',query: {id: this.comList[index].id}})
+    },
+    exchange(index){
+      this.id=this.comList[index].id
+      this.$store.state.points=this.comList[index].integral
+      api.personal.getDefaultAddress().then((res)=>{
+        if(res.status==200){
+          this.$router.push({path:'/points_market/order',query: {id: this.id}})
+        }
+      })
+    },
+    last(){
+      this.page-=1
+      api.personal.bonusMall({page:this.page,limit:8}).then((res)=>{
+      this.comList=res.data.product_info
+    })
+    },
+    next(){
+      this.page+=1
+      api.personal.bonusMall({page:this.page,limit:8}).then((res)=>{
+      this.comList=res.data.product_info
+    })
+      
+    },
+    currentChange(val){
+      this.page=val
+      api.personal.bonusMall({page:this.page,limit:8}).then((res)=>{
+      this.comList=res.data.product_info
+    })
+      
+    }
+  },
+  mounted(){
+    api.personal.bonusMall({page:this.page,limit:8}).then((res)=>{
+      this.comList=res.data.product_info
+      this.total=res.data.product_count
+    })
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+
+.market {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #d4274f;
+  .banner {
+    width: 100%;
+    position: relative;
+    img {
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+  }
+  .content {
+    max-width: 1200px;
+    background-color: #fff;
+    padding: 40px 60px 90px 60px;
+    margin: 0 auto;
+    margin-bottom: 0;
+    box-sizing: border-box;
+    @include flex(column);
+    .item {
+      width: 100%;
+      .title {
+        width: 100%;
+        height: 80px;
+        background: linear-gradient(
+          90deg,
+          rgba(240, 138, 117, 1),
+          rgba(237, 134, 179, 1)
+        );
+        border-radius: 20px 20px 0 0;
+        font-size: 30px;
+        color: #fff;
+        @include flex;
+      }
+      .goods {
+        @include flex;
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        margin-top: 20px;
+        .g-item {
+          @include flex(column);
+          width: 300px;
+          justify-content: flex-start;
+          border-left: 30px solid #fff;
+          border-right: 30px solid #fff;
+          margin-bottom: 60px;
+          .g-img {
+            width: 269px;
+            height: 269px;
+            object-fit: cover;
+            margin-bottom: 40px;
+          }
+          .g-title {
+            text-align: center;
+            height: 56px;
+            line-height: 28px;
+            @include ellipsis(2);
+          }
+          .g-price {
+            margin-top: 30px;
+            width: 100%;
+            @include flex;
+            font-weight: bold;
+          }
+          .g-btn {
+            width: 150px;
+            height: 50px;
+            background: rgba(253, 151, 144, 1);
+            border-radius: 25px;
+            @include flex;
+            color: #fff;
+            margin-top: 24px;
+            cursor: pointer;
+            img {
+              margin-right: 8px;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .market {
+    .content {
+      width: 100%;
+      background-color: #fff;
+      padding: px(36) px(20) 0 px(20);
+      margin: 0 auto;
+      margin-bottom: 0;
+      @include flex(column);
+      .item {
+        width: 100%;
+        .title {
+          width: 100%;
+          height: px(80);
+          background: linear-gradient(
+            90deg,
+            rgba(240, 138, 117, 1),
+            rgba(237, 134, 179, 1)
+          );
+          border-radius: px(20) px(20) 0 0;
+          font-size: px(40);
+          color: #fff;
+          @include flex;
+        }
+        .goods {
+          @include flex;
+          flex-wrap: wrap;
+          justify-content: flex-start;
+          margin-top: 20px;
+          .g-item {
+            @include flex(column);
+            width: px(300);
+            justify-content: flex-start;
+            border-left: px(22) solid #fff;
+            border-right: px(22) solid #fff;
+            margin-bottom: px(60);
+            .g-img {
+              max-width: px(270);
+              max-height: px(270);
+              object-fit: cover;
+              margin-bottom: px(40);
+            }
+            .g-title {
+              text-align: center;
+              height: px(56);
+              line-height: px(28);
+              @include ellipsis(2);
+              font-size: px(24);
+            }
+            .g-price {
+              margin-top: px(20);
+              width: 100%;
+              @include flex;
+              font-weight: bold;
+              font-size: px(24);
+            }
+            .g-btn {
+              width: px(186);
+              height: px(60);
+              background: rgba(253, 151, 144, 1);
+              border-radius: px(30);
+              @include flex;
+              color: #fff;
+              margin-top: px(24);
+              font-size: px(18);
+              img {
+                width: px(17);
+                height: px(22);
+                margin-right: px(8);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</style>

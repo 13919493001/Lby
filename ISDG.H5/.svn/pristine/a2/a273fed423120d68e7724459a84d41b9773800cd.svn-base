@@ -1,0 +1,251 @@
+<template>
+  <div :class="{ login: type === 'nor', popover: type === 'popover' }">
+    <div class="content">
+      <div class="title">
+        <div @click="toggle(0)" :class="{ active: active === 0 }">
+          账户登录
+        </div>
+        <div @click="toggle(1)" :class="{ active: active === 1 }">
+          快捷登录
+        </div>
+      </div>
+      <my-form
+        :status="4"
+        :placeholder="quickLogin"
+        @submit="submit1"
+        :imgCode="imgCode"
+        @getCode="getCode"
+        @sendcode="sendcode"
+        v-if="active === 1"
+      />
+      <my-form
+        :status="5"
+        :placeholder="login"
+        :imgCode="imgCode"
+        @getCode="getCode"
+        @submit="submit2"
+        v-if="active === 0"
+      />
+    </div>
+  </div>
+</template>
+
+<script>
+import banner from "@/components/common/banner";
+import myForm from "@/components/form";
+import api from "@/plugins/api/api";
+export default {
+  components: {
+    banner,
+    myForm
+  },
+  props: {
+    type: {
+      type: String,
+      default: "nor"
+    }
+  },
+  data() {
+    return {
+      quickLogin: {
+        p1: "请输入注册手机号",
+        p2: "请输入短信验证码",
+        p3: "发送短信",
+        p4: "登录"
+      },
+      login: {
+        p1: "请输入注册手机号",
+        p3: "验证码",
+        p4: "登录",
+        p5: "登录密码"
+      },
+      active: 0,
+      imgCode:"",
+      a:0
+    };
+  },
+  methods: {
+    //
+    submit2(form) {
+      console.log(form);
+      let params = {account:form.phone, password:form.pwd,captcha:form.code2}
+      api.login.login(params).then(res => {
+        console.log(res.msg)
+        if(res.status === 200) {
+          this.$router.push('/');
+          this.$message({
+              message: res.msg,
+              type: 'success'
+            });
+            // this.$store.commit("login_success");
+            sessionStorage.setItem("userToken",res.data.token)
+            sessionStorage.setItem("isLogin",true)
+            this.$store.dispatch("setToken",res.data.token)
+            console.log(this.$store.state.isLogin)
+        }
+      })
+    },
+    //快捷登录
+    submit1(form) {
+      console.log(form);
+      let params = {account:form.phone, password:form.pwd,captcha:form.code2}
+      api.login.quickLogin(params).then(res => {
+        console.log(res)
+        if(res.status === 200) {
+          this.$message({
+              message: res.msg,
+              type: 'success'
+            });
+          this.$router.push('/');
+          // this.$store.commit("login_success");
+        } 
+      })
+    },
+    sendcode(form) {
+      console.log(form)
+      let params = {phone:form.phone}
+        api.login.getVerify(params).then(res => {
+          console.log(res)
+          if(res.status === 200) {
+            this.$message({
+              message: res.msg,
+              type: 'success'
+            });
+          } 
+        })
+    },
+    toggle(id) {
+      this.active = id;
+    },
+    getCode(){
+        this.a+=1
+        this.imgCode="http://192.168.1.31:8087/api/captcha?t="+this.a
+        
+    }
+  },
+  mounted(){
+    // api.login.getCaptcha().then((res)=>{
+        this.imgCode="http://192.168.1.31:8087/api/captcha"
+        // this.imgCode=this.imgCode.replace(/"/ig,"")
+
+    // })
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.popover {
+  width: 100%;
+  background-color: #fff;
+  .content {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 0;
+    .title {
+      @include flex;
+      height: 40px;
+      border-bottom: 1px solid #dcdcdc;
+      div {
+        margin-right: 50px;
+        height: 100%;
+        @include flex;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+      .active {
+        border-color: #5cd2b0;
+      }
+    }
+    .form {
+      margin-top: 0;
+      width: 100%;
+      height: 100% !important;
+      background-color: #fff;
+      padding-bottom: 0;
+      /deep/.el-form {
+        width: 100%;
+      }
+    }
+  }
+}
+.login {
+  width: 100%;
+  height: 100%;
+  background-color: #f6f6f6;
+  .content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 0;
+    .title {
+      @include flex;
+      height: 40px;
+      border-bottom: 1px solid #dcdcdc;
+      div {
+        margin-right: 50px;
+        height: 100%;
+        @include flex;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+      .active {
+        border-color: #5cd2b0;
+      }
+    }
+    .form {
+      margin-top: 0;
+      background-color: #f6f6f6;
+      height: 100% !important;
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .login {
+    background-color: #fbf8fb;
+  }
+  .content {
+    width: 100%;
+    margin: 0 auto;
+    padding: px(80) 0;
+    .title {
+      @include flex;
+      height: px(90) !important;
+      border-bottom: 1px solid #dcdcdc;
+      font-size: px(36);
+      div {
+        height: 100%;
+        @include flex;
+        cursor: pointer;
+      }
+    }
+    .form {
+      margin-top: 0;
+      background-color: #fbf8fb !important;
+      height: 100% !important;
+      padding-top: px(25);
+      /deep/.el-form {
+        width: px(666);
+        .el-input__inner {
+          height: px(80);
+          border-radius: 2px;
+        }
+        .btn2 {
+          height: px(80);
+          border-radius: 2px;
+        }
+        .autoLogin {
+          .el-form-item__content {
+            padding: 0;
+          }
+        }
+      }
+    }
+  }
+}
+</style>

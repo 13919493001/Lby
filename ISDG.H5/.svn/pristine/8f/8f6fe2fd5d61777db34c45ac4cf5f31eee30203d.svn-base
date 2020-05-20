@@ -1,0 +1,24 @@
+// export const state = () => ({
+//   //token
+//   token: window.sessionStorage.getItem("token") || "",
+//   //isLogin
+//   isLogin: window.sessionStorage.getItem("isLOgin") ? Boolean(window.sessionStorage.getItem("isLogin")):false
+// })
+// export const mutation = {
+//   //设置token
+//   set_token(state,token) {
+//     state.token = token;
+//     window.sessionStorage.setItem("token",token);
+//   },
+//   //登录成功
+//   login_success(state) {
+//     state.isLogin = true;
+//   },
+//   //注销登录
+//   logout(state) {
+//     state.isLogin = false;
+//     state.token = "";
+//     window.sessionStorage.setItem("isLogin",false);
+//     window.sessionStorage.removeItem("token")
+//   }
+// }

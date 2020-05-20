@@ -1,0 +1,27 @@
+<template>
+  <div class="scroll">
+    <navbar />
+    <transition name="el-zoom-in-top">
+      <nuxt />
+    </transition>
+    <scrollTop />
+    <el-backtop target=".scroll"></el-backtop>
+    <tabbar />
+  </div>
+</template>
+
+<script>
+import navbar from "@/components/common/navbar";
+import tabbar from "@/components/common/tabbar";
+import scrollTop from "@/components/scrollTop";
+export default {
+  components: {
+    navbar,
+    tabbar,
+    scrollTop
+  },
+  methods: {}
+};
+</script>
+
+<style lang="scss" scoped></style>

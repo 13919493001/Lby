@@ -1,0 +1,231 @@
+<template>
+  <div class="shareCode">
+    
+    <banner />
+    <div class="content">
+      <order-search />
+      <div class="menu">
+        <div
+          class="item"
+          :class="{ active: active === index }"
+          v-for="(item, index) in menu"
+          :key="index"
+          @click="active = index"
+        >
+          {{ item }}
+        </div>
+      </div>
+      <!--  -->
+      <div class="tip">全部下级：66人，直接下级：18人；间接下级：48人；</div>
+      <!--  -->
+      <div class="table">
+        <div class="th">
+          <div>序号</div>
+          <div>下级用户</div>
+          <div>用户ID</div>
+          <div>绑定关系时间</div>
+          <div>历史返积分</div>
+        </div>
+        <div class="tr" v-for="(item, index) in 4" :key="index">
+          <div>01</div>
+          <div>
+            <img src="@/static/demo/demo3.png" alt="" />
+            <div>无尽的黑夜</div>
+          </div>
+          <div>ISD124512242121</div>
+          <div>2019-12-25 17:25</div>
+          <div style="color:#5dd2b1">100积分</div>
+        </div>
+      </div>
+      <!--  -->
+      <el-pagination
+        background
+        layout="prev, pager, next"
+        :total="36"
+        prev-text="上一页"
+        next-text="下一页"
+        :pager-count="5"
+      >
+      </el-pagination>
+    </div>
+    
+  </div>
+</template>
+
+<script>
+
+
+import banner from "@/components/common/banner";
+import orderSearch from "@/components/order/orderSearch";
+export default {
+  data() {
+    return {
+      active: 0,
+      menu: ["直接下级", "间接下级"]
+    };
+  },
+  components: {
+    banner,
+    orderSearch
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.shareCode {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f3f0f3;
+  .content {
+    max-width: 1200px;
+    padding: 70px 30px 80px 30px;
+    box-sizing: border-box;
+    background-color: #fff;
+    margin: 0 auto;
+    margin-top: -30px;
+    position: relative;
+    z-index: 2;
+    margin-bottom: 50px;
+    @include pagination;
+    .menu {
+      width: 100%;
+      margin: 0 auto;
+      @include flex;
+      .item {
+        cursor: pointer;
+        padding: 6px 16px;
+        @include flex;
+        margin-right: 10px;
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+      .active {
+        color: #fff;
+        background-color: #225c45;
+      }
+    }
+    .tip {
+      color: #5dd2b1;
+      margin: 26px 0;
+      width: 100%;
+      text-align: center;
+    }
+    .table {
+      width: 100%;
+      margin-top: 26px;
+      margin-bottom: 57px;
+      .th {
+        @include flex;
+        background-color: #fbfbfb;
+        height: 35px;
+        div {
+          flex: 1;
+          text-align: center;
+        }
+      }
+      .tr {
+        @include flex;
+        height: 120px;
+        border-bottom: 1px solid #e5e5e5;
+        div {
+          flex: 1;
+          text-align: center;
+          &:first-child {
+            color: #809b72;
+          }
+          &:nth-child(2) {
+            color: #888;
+            @include flex(column);
+            img {
+              width: 55px;
+              height: 55px;
+              border-radius: 50%;
+              margin-bottom: 8px;
+            }
+          }
+          &:nth-child(4) {
+            color: #888;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .shareCode {
+    .content {
+      width: 100%;
+      padding: px(92) px(20) px(150) px(20);
+      margin-top: px(-30);
+      margin-bottom: 0;
+      @include pagination-m;
+      .menu {
+        width: 50%;
+        margin: 0 auto;
+        @include flex;
+        justify-content: space-between;
+        font-size: px(24);
+        .item {
+          cursor: pointer;
+          padding: px(13) px(30);
+          @include flex;
+          margin-right: 0;
+        }
+        .active {
+          color: #fff;
+          background-color: #225c45;
+        }
+      }
+      .tip {
+        color: #5dd2b1;
+        margin: px(36) 0;
+        width: 100%;
+        font-size: px(20);
+        text-align: center;
+      }
+      .table {
+        width: 100%;
+        margin-top: px(44);
+        margin-bottom: px(65);
+        .th {
+          font-size: px(20);
+          @include flex;
+          background-color: #fbfbfb;
+          height: px(62);
+          div {
+            flex: 1;
+            text-align: center;
+          }
+        }
+        .tr {
+          font-size: px(20);
+          @include flex;
+          height: px(149);
+          border-bottom: 1px solid #e5e5e5;
+          div {
+            flex: 1;
+            text-align: center;
+            &:first-child {
+              color: #809b72;
+            }
+            &:nth-child(2) {
+              color: #888;
+              img {
+                width: px(80);
+                height: px(80);
+                border-radius: 50%;
+                margin-bottom: px(8);
+              }
+            }
+            &:nth-child(4) {
+              color: #888;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</style>

@@ -1,0 +1,49 @@
+<template>
+  <div class="password">
+    
+    <banner />
+    <my-form
+      :status="1"
+      :placeholder="placeholder"
+      title="修改手机"
+      @submit="submit"
+    />
+    <tabbar/>
+  </div>
+</template>
+
+<script>
+
+import banner from "@/components/common/banner";
+import myForm from "@/components/form";
+
+export default {
+  components: {
+    banner,
+    myForm,
+  },
+  data() {
+    return {
+      placeholder: {
+        p1: "请输入新绑定手机",
+        p2: "请输入手机验证码",
+        p3: "发送短信",
+        p4: "下一步"
+      }
+    };
+  },
+  methods: {
+    submit(form) {
+      console.log(form);
+    }
+  }
+};
+</script>
+
+<style lang="scss" scoped>
+.password {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f3f0f3;
+}
+</style>
